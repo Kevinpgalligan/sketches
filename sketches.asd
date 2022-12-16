@@ -1,0 +1,16 @@
+(defpackage :sketches-asd
+  (:use :cl :asdf))
+
+(in-package :sketches-asd)
+
+(defsystem sketches
+  :license "MIT"
+  :author "Kevin Galligan"
+  :depends-on (:sketch :random-state)
+  :pathname "src"
+  :serial t
+  :components ((:file "package")
+               (:file "tools")
+               (:file "noise")
+               (:file "stars")
+               (:file "rain")))
