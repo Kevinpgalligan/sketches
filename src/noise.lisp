@@ -1,7 +1,6 @@
 (in-package sketches)
 
-;; TODO: change smoothstep interface, I don't think it
-;; should do the lerp for us.
+(declaim (optimize (speed 0) (space 0) (debug 3)))
 
 (defparameter *noise-size* 256)
 (defparameter *permutation-table*
@@ -23,7 +22,7 @@
 (defparameter *noisegen* (random-state:make-generator 'random-state:mersenne-twister-64))
 
 (defun make-vnoise (&key (dimensions 1) (seed 7))
-  (let* ((offsets (generate-gray-code-sequences dimensions))
+  (let* ((offsets (generate-corner-offsets dimensions))
          (r (make-array (list *noise-size*)))
          (permute
            (lambda (i)
@@ -47,6 +46,7 @@
              ;; the values at each corner of the cell that this point is in.
              (fs (mapcar (lambda (x)
                            (multiple-value-bind (i f) (floor x)
+                             (declare (ignore i))
                              f))
                          coords)))
         ;; These are the values at each corner of the cell, now we have to interpolate
@@ -58,7 +58,7 @@
                       collect (funcall get-value (mapcar #'+ base-corner offset)))))
           (loop for f in fs
                 do (combine-pairs! (lambda (v1 v2)
-                                     (smoothstep v1 v2 f))
+                                     (lerp v1 v2 (smoothstep f)))
                                    vals))
           (car vals))))))
 
@@ -72,18 +72,15 @@
 (defun noise-get (noise &rest coords)
   (apply noise coords))
 
-(defun generate-gray-code-sequences (n)
-  ;; See: https://en.wikipedia.org/wiki/Gray_code#Constructing_an_n-bit_Gray_code
+(defun generate-corner-offsets (n)
   (labels ((rec (n sequences)
              (if (<= n 0)
                  sequences
                  (rec (1- n)
-                      (nconc (mapcar (lambda (sequence) (cons 0 sequence))
+                      (nconc (mapcar (lambda (sequence)
+                                       (reverse (cons 0 (reverse sequence))))
                                      sequences)
-                             (mapcar (lambda (sequence) (cons 1 sequence))
-                                     (reverse sequences)))))))
-    ;; Reverse all the sequences at the end because we want them to be
-    ;; in the order so that every adjacent values differ in their x coordinate,
-    ;; every adjacent pairs differ in their y coordinate, every adjacent quadruples
-    ;; differ in their z coordinate, etc.
-    (mapcar #'reverse (rec n (list (list))))))
+                             (mapcar (lambda (sequence)
+                                       (reverse (cons 1 (reverse sequence))))
+                                     sequences))))))
+    (rec n (list (list)))))
