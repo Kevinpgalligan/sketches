@@ -12,11 +12,6 @@ then `(make-instance 'name-of-sketch)`.
 - Snow (a la Celeste)
 - Rain (additions: fog, wind, lightning)
 
-# Infrastructure
-Eventually, I will probably want to generate a finite number of noise
-values up front and map into their range. It's not terribly efficient
-to generate the noise values each time the function is called.
-
 # TODO
 * Tweak smoothstep interface, it shouldn't do lerp for you.
 * Investigate discontinuity in noise (see: 2d noise example, there's a sudden jump between low and high values).
