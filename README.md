@@ -11,7 +11,3 @@ then `(make-instance 'name-of-sketch)`.
 - Unknown Pleasures album cover
 - Snow (a la Celeste)
 - Rain (additions: fog, wind, lightning)
-
-# TODO
-* Tweak smoothstep interface, it shouldn't do lerp for you.
-* Investigate discontinuity in noise (see: 2d noise example, there's a sudden jump between low and high values).

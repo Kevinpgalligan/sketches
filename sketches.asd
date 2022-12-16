@@ -13,4 +13,5 @@
                (:file "tools")
                (:file "noise")
                (:file "stars")
-               (:file "rain")))
+               (:file "rain")
+               (:file "heightmap")))
