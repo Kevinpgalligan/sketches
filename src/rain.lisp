@@ -1,8 +1,3 @@
-;; Wondering how to make it more life-like.
-;; Maybe add wind, fog (based on Perlinesque noise, which varies
-;; in time and 2d space). Wind can just be a horizontal effect on
-;; the value of x that varies in time.
-
 (in-package sketches)
 
 (defclass drop ()
@@ -43,9 +38,15 @@
 
 (defun update-drop! (drop nx ny)
   (set-and-drop-oldest! drop nx 'x 'old-xs)
-  (set-and-drop-oldest! drop ny 'y 'old-ys))
+  (set-and-drop-oldest! drop ny 'y 'old-ys)
+  (when (< (x drop) (car (last (old-xs drop))))
+    (loop for sublist on (old-xs drop)
+          ;; Drop has looped to other side of screen, set the old
+          ;; values to 0.
+          when (< (x drop) (car sublist))
+            do (setf (car sublist) 0))))
 
-(defparameter +old-vals-to-track+ 2)
+(defparameter +old-vals-to-track+ 3)
 
 (defun set-and-drop-oldest! (drop new-val val-name old-vals-name)
   (push (slot-value drop val-name) (slot-value drop old-vals-name))
@@ -58,15 +59,45 @@
     ((width 600)
      (height 400)
      (depth 300)
-     (dy 3)
-     (drops (loop repeat 500
-                  collect (make-drop (random width) (random height) (random depth)))))
+     (dy 2)
+     (N-fog (make-vnoise :dimensions 3))
+     (fog-tile-interval 40)
+     (fog-tile-size 40)
+     (fog-alpha 0.3)
+     (fog-noise-scale 0.1)
+     (max-fog 0.5)
+     (N-wind (make-vnoise))
+     ;; Wind changes over time.
+     (t0 0)
+     (dt 0.006)
+     (wind-threshold 0.4)
+     (max-wind 5)
+     (drops (loop repeat 1000
+                  collect (make-drop (random width)
+                                     (random height)
+                                     (random depth)))))
   (background +black+)
   (loop for drop in drops
-        do (let ((colour (hsb 0 0 (/ (z drop) depth)) +white+))
+        for wind = (noise-get N-wind t0)
+        for dx = (if (> wind wind-threshold)
+                     (* (/ (- wind wind-threshold) (- 1 wind-threshold))
+                        max-wind)
+                     0)
+        do (let ((colour (hsb 0.6 0.8 (/ (z drop) depth)) +white+))
              (with-pen (make-pen :weight 1 :stroke colour :fill colour)
                (line (drop-oldest-x drop) (drop-oldest-y drop) (x drop) (y drop))))
            ;; Positive addition to y -> drop falls down.
-        do (update-drop! drop (x drop) (+ (y drop) dy))
+        do (update-drop! drop (mod (+ (x drop) dx) width) (+ (y drop) dy))
         do (when (drop-off-screen? drop height)
-             (reinit-drop! drop width height depth))))
+             (reinit-drop! drop width height depth)))
+  (dotimes (i (/ height fog-tile-interval))
+    (dotimes (j (/ width fog-tile-interval))
+      (let* ((fog (noise-get N-fog (* fog-noise-scale i) (* fog-noise-scale j) t0))
+             (colour (hsb 0 0 (* max-fog fog) fog-alpha))
+             (stroke-colour (hsb 0 0 0 0)))
+        (with-pen (make-pen :stroke stroke-colour :fill colour)
+          (rect (* j fog-tile-interval)
+                (* i fog-tile-interval)
+                fog-tile-size
+                fog-tile-size)))))
+  (incf t0 dt))

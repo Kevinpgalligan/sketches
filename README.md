@@ -10,4 +10,3 @@ then `(make-instance 'name-of-sketch)`.
 - Something with random fields
 - Unknown Pleasures album cover
 - Snow (a la Celeste)
-- Rain (additions: fog, wind, lightning)
