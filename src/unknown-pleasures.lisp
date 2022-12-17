@@ -30,10 +30,10 @@
                             for offset-from-mid = (abs (- (/ width 2) x))
                             while (< x (- width x-offset))
                             collect x
-                            ;; Exponentially reduce noise effect as we go out from
+                            ;; Reduce effect of noise as we go out from
                             ;; the center.
                             collect (min y
                                          (- y (* max-height
                                                  (noise-get N (* x-noise-scale x) (* y-noise-scale y) z)
-                                                 (- 1 (/ offset-from-mid (/ (- width (* 2 y-offset)) 2)))))))))))
+                                                 (smoothstep (- 1 (/ offset-from-mid (/ (- width (* 2 y-offset)) 2))))))))))))
   (incf z dz))

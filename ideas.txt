@@ -1,0 +1,5 @@
+- Halt & Catch Fire-esque image leaking
+- Coloured squares, squares within squares
+- Jigsaw effect
+- Something with random fields
+- Snow (a la Celeste)
