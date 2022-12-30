@@ -1,5 +1,13 @@
 - Halt & Catch Fire-esque image leaking
 - Coloured squares, squares within squares
 - Jigsaw effect
-- Something with random fields
-- Snow (a la Celeste)
+- Flow fields, layered particle trace.
+- Map of underground
+- Layers of bezier curves, colour between each layer.
+- Colour study.
+- Tiling.
+
+Investigate whether this is a bug:
+
+SKETCHES> (rgb-to-hsb 125 174 232)
+(379/642 107/232 232)

@@ -6,3 +6,12 @@
 
 (defun smoothstep (t0)
   (* t0 t0 (- 3 (* 2 t0))))
+
+(defun halve (x)
+  (/ x 2))
+
+(defun square (x)
+  (* x x))
+
+(defmacro scalef (place factor)
+  `(setf ,place (* ,place ,factor)))

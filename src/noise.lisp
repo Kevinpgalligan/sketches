@@ -20,10 +20,10 @@
                 49 192 214 31 181 199 106 157 184 84 204 176 115 121 50 45 127 4 150 254  
                 138 236 205 93 222 114 67 29 24 72 243 141 128 195 78 66 215 61 156 180)))
 (defparameter *noisegen* (random-state:make-generator 'random-state:mersenne-twister-64))
+(defparameter *offsets-table* (make-hash-table))
 
-(defun make-vnoise (&key (dimensions 1) (seed 7))
-  (let* ((offsets (generate-corner-offsets dimensions))
-         (r (make-array (list *noise-size*)))
+(defun make-vnoise (&key (seed 7))
+  (let* ((r (make-array (list *noise-size*)))
          (permute
            (lambda (i)
              (aref *permutation-table* (mod i *noise-size*))))
@@ -40,8 +40,8 @@
     (dotimes (i *noise-size*)
       (setf (aref r i) (random-state:random-unit *noisegen*)))
     (lambda (&rest coords)
-      (assert (= (length coords) dimensions))
-      (let* ((base-corner (mapcar #'floor coords))
+      (let* ((offsets (get-corner-offsets (length coords)))
+             (base-corner (mapcar #'floor coords))
              ;; Fractional parts of the coordinates, used to interpolate between
              ;; the values at each corner of the cell that this point is in.
              (fs (mapcar (lambda (x)
@@ -71,6 +71,14 @@
 
 (defun noise-get (noise &rest coords)
   (apply noise coords))
+
+(defun get-corner-offsets (num-dimensions)
+  ;; Cache the offsets so that we don't need to generate
+  ;; them for every single call.
+  (or (gethash num-dimensions *offsets-table*)
+      (let ((offsets (generate-corner-offsets num-dimensions)))
+        (setf (gethash num-dimensions *offsets-table*) offsets)
+        offsets)))
 
 (defun generate-corner-offsets (n)
   (labels ((rec (n sequences)

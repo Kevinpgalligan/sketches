@@ -4,7 +4,7 @@
     ((width 600)
      (height 400)
      (tile-width 10)
-     (N (make-vnoise :dimensions 3))
+     (N (make-vnoise))
      (noise-coords-scale 0.02)
      ;; Time dimension.
      (z 0)

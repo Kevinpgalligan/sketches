@@ -6,8 +6,7 @@ These are my experiments with the `sketch` library for Common Lisp, which provid
 * random-state
 
 # How to run
-Add soft link to this directory to quicklisp's local-projects folder, then
-from the REPL do `(ql:quickload 'sketches)`, then switch to the `sketches` package (`(in-package sketches)`), then `(make-instance 'rain)`.
+Add soft link to this directory to quicklisp's local-projects folder, then from the REPL do `(ql:quickload 'sketches)`, then switch to the `sketches` package (`(in-package sketches)`), then `(make-instance 'rain)`.
 
 # Sketches
 * `stars.lisp`: a star field based on The Coding Train's first coding challenge.

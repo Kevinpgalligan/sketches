@@ -60,7 +60,9 @@
      (height 400)
      (depth 300)
      (dy 2)
-     (N-fog (make-vnoise :dimensions 3))
+     (min-rain-weight 0.5)
+     (max-rain-weight 2)
+     (N-fog (make-vnoise))
      (fog-tile-interval 40)
      (fog-tile-size 40)
      (fog-alpha 0.3)
@@ -84,7 +86,9 @@
                         max-wind)
                      0)
         do (let ((colour (hsb 0.6 0.8 (/ (z drop) depth)) +white+))
-             (with-pen (make-pen :weight 1 :stroke colour :fill colour)
+             (with-pen (make-pen :weight (lerp min-rain-weight max-rain-weight (/ (z drop) depth))
+                                 :stroke colour
+                                 :fill colour)
                (line (drop-oldest-x drop) (drop-oldest-y drop) (x drop) (y drop))))
            ;; Positive addition to y -> drop falls down.
         do (update-drop! drop (mod (+ (x drop) dx) width) (+ (y drop) dy))

@@ -6,7 +6,7 @@
 (defsystem sketches
   :license "MIT"
   :author "Kevin Galligan"
-  :depends-on (:sketch :random-state)
+  :depends-on (:sketch :random-state :alexandria)
   :pathname "src"
   :serial t
   :components ((:file "package")
@@ -14,4 +14,5 @@
                (:file "noise")
                (:file "stars")
                (:file "rain")
-               (:file "heightmap")))
+               (:file "heightmap")
+               (:file "unknown-pleasures")))
