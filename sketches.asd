@@ -15,4 +15,5 @@
                (:file "stars")
                (:file "rain")
                (:file "heightmap")
-               (:file "unknown-pleasures")))
+               (:file "unknown-pleasures")
+               (:file "snow")))

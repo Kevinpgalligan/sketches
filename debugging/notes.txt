@@ -1,0 +1,49 @@
+### Observations
+- Idea for why the movement may look choppy: the overall x position of the screen may be moving out of sync with how we move the relative x value across the screen. Not sure exactly why that would make things look choppy, need to think through the consequences.
+- I've recreated the visual glitches and shared them here: https://github.com/vydd/sketch/issues/15
+  Debug data copied below.
+
+### Digging into the code
+The polygon function: https://github.com/vydd/sketch/blob/aea3f9509182749fa80bcc993dc0f284559b2392/src/shapes.lisp#L135
+
+polygon calls:
+  (1) draw-shape (https://github.com/vydd/sketch/blob/aea3f9509182749fa80bcc993dc0f284559b2392/src/drawing.lisp#L53)
+  (2) make-polygon
+
+make-polygon returns a 'primitive' tag (:triangles), a list of triangles (uses TRIANGULATE function for this), and a list of x & y coordinate pairs. These are then passed to draw-shape.
+
+If draw-shape is just filling in the triangles, then the problem must be with TRIANGULATE, which relies heavily on cl-geometry. draw-shape is quite involved, so I'll stick with the theory that it's working correctly.
+
+So, things to try:
+(1) Try the polygon with no fill, see if it draws the boundaries correctly. I'm guessing it will. Or use a different colour for the stroke.
+(2) Call triangulate function myself, pass each triangle to draw-polygon with a different colour and see what's going on. This will prove that the problem is with the triangulate function.
+(3) Assuming that the problem is indeed with triangulate, I'll need to dig into the geometry code, here's triangulate: https://github.com/vydd/sketch/blob/aea3f9509182749fa80bcc993dc0f284559b2392/src/geometry.lisp#L71
+cl-geometry's interface is accessed through the package 2d-geometry.
+I've dug into the cl-geometry code a bit, it's fairly complex. So better to run the tests before committing to a big effort in understanding it.
+
+### Debug data
+Happy case points:
+(0 417.6874057601965d0 20 429.90173624550096d0 40 436.66725241007214d0 60
+ 431.5054943514898d0 80 411.53018674336744d0 100 385.0467927999306d0 120
+ 360.7326617349798d0 140 347.2650675065988d0 160 349.15439981002646d0 180
+ 358.4114987507147d0 200 370.6846289206152d0 220 381.95246024113356d0 240
+ 388.193710633887d0 260 386.22744696926566d0 280 377.9696671791911d0 300
+ 367.0214507385711d0 320 356.97000517529347d0 340 351.40251070496794d0 360
+ 352.62843721334133d0 380 358.07371249911984d0 400 365.29310034815535d0 420
+ 371.9211435148715d0 440 375.59241581570245d0 460 374.94465626013084d0 480
+ 371.9383246717213d0 500 367.9525143413313d0 520 364.29318144220247d0 540
+ 362.2662773961404d0 560 365.93221976016264d0 580 379.6275664545465d0 600
+ 397.7848402934933d0 600 500 0 500)
+
+Buggy case points:
+(0 412.6729730407338d0 20 416.0359762879553d0 40 413.4338953818984d0 60
+ 392.59473615330216d0 80 361.1162002874776d0 100 329.6376644216531d0 120
+ 308.79941694437406d0 140 305.77897854671374d0 160 306.3396401446708d0 180
+ 307.18654608649047d0 200 308.03345202831014d0 220 308.59408914564114d0 240
+ 309.55914464615205d0 260 315.4794234687506d0 280 324.42228505728843d0 300
+ 333.36514664582626d0 320 339.2851666788839d0 340 340.719435971895d0 360
+ 344.4296615582641d0 380 350.03413334259403d0 400 355.63860512692395d0 420
+ 359.3486687245161d0 440 360.8197349031721d0 460 366.98778159037965d0 480
+ 376.3049087037839d0 500 385.6220358171881d0 520 391.78981316852196d0 540
+ 391.49419299873205d0 560 383.33900936892644d0 580 371.02021909136465d0 600
+ 358.7014288138029d0 600 500 0 500)
