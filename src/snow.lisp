@@ -5,9 +5,6 @@
 (defsketch snowscene
     ((width 600)
      (height 500)
-     ;;;; DEBUG STUFF
-     (pause nil)
-     (debug-points nil)
      ;;;; WIND STUFF.
      (wind-cell-size 50)
      ;; Change this to make the jumps in the wind values bigger/smaller
@@ -25,18 +22,14 @@
                                            :vy 0
                                            :r (+ 2 (random 3)))))
      ;;;; MOUNTAIN STUFF.
-     ;; removed for debugging: 0 600 1200
-     (peak-x-offsets '(1200))
-     ;; removed for debugging: 100 200 300
-     (peak-y-offsets '(300))
+     (peak-x-offsets '(0 600 1200))
+     (peak-y-offsets '(100 200 300))
      (max-peak-height 150)
      (peak-colours (list
-                    ;; removed for debugging:
-                    ;(hsb-360 213 46 91)
-                    ;(hsb-360 213 46 60)
+                    (hsb-360 213 46 91)
+                    (hsb-360 213 46 60)
                     (hsb-360 213 46 30)))
-     ;; removed for debugging: 1 5 10
-     (peak-dxs '(5))
+     (peak-dxs '(1 3 5))
      (peak-noise-scale 0.01)
      (peak-gap 20)
      (N-peaks (make-vnoise))
@@ -61,14 +54,8 @@
                     ;; Append the bottom right and bottom left corners as points so
                     ;; that we draw the mountain over the whole screen.
                     (list width height 0 height))))
-             (with-pen (make-pen :fill peak-colour :stroke peak-colour)
-               (apply #'polygon peak-points))
-             ;; DEBUGGING
-             (when pause
-               (setf debug-points peak-points))
-             (with-pen (make-pen :fill +red+ :stroke +red+)
-               (loop for (x y) on peak-points by #'cddr
-                     do (circle x y 5)))))
+             (with-pen (make-pen :fill peak-colour)
+               (apply #'polygon peak-points))))
   (when draw-wind-vectors-p
     (dotimes (i (/ height wind-cell-size))
       (dotimes (j (/ width wind-cell-size))
@@ -111,9 +98,8 @@
                          (let ((factor (/ flake-max-velocity mag)))
                            (scalef (snowflake-vx flake) factor)
                            (scalef (snowflake-vy flake) factor)))))))))
-  (when (not pause)
-    (incf z dz)
-    (incf steps)))
+  (incf z dz)
+  (incf steps))
 
 (defun outside-bounds-p (flake width height)
   (with-slots (x y r) flake
@@ -121,11 +107,3 @@
         (< (+ y r) 0)
         (>= (- x r) width)
         (>= (- y r) height))))
-
-;; DEBUGGING
-(defmethod kit.sdl2:textinput-event ((window snowscene) ts text)
-  (when (string= text "p")
-    (when (slot-value window 'pause)
-      ;; Unpausing, print out the values!
-      (format t "~a~%" (slot-value window 'debug-points)))
-    (setf (slot-value window 'pause) (not (slot-value window 'pause)))))
