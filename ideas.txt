@@ -6,8 +6,5 @@
 - Layers of bezier curves, colour between each layer.
 - Colour study.
 - Tiling.
-
-Investigate whether this is a bug:
-
-SKETCHES> (rgb-to-hsb 125 174 232)
-(379/642 107/232 232)
+- That graph thing in the Singapore museum.
+- Random walk where there's a funny-looking old-fashioned guy actually walking.

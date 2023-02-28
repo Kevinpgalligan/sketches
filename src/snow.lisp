@@ -4,33 +4,6 @@
 
 (defstruct snowflake x y vx vy r)
 
-;; Debugging the shimmers:
-;; STEP 0:
-;;   base-x: 0
-;;   x-rel: 0 20 40 60 ...
-;;   x: 0 20 40 60
-;; STEP 1:
-;;   base-x: 3
-;;   x-rel: 0 20 40 60 ...
-;;   x: 3 23 43 63
-;; So, it makes sense that it's shimmering, we're drawing at slightly
-;; different points each time.
-;; Need to think through how to do it properly.
-;; FIRST FRAME: for all the mountains we draw at fixed intervals (~20 pixels):
-;;    x = 0 20 40 60 ...
-;; SECOND FRAME: we should still skip at intervals of 20, but starting from outside
-;; the screen.
-;;    First mountain range:
-;;      x = -1 19 39 59 ...
-;;    Second mountain range:
-;;      x = -3 17 37 57 ...
-;; So, maybe we need to keep track of the first (relative) x value for each peak, as
-;; soon as it becomes less than -20 (or whatever) we add 20 to it. I think that works.
-;; Actually, no. The first x value shouldn't change! It's where we draw it relative
-;; to the screen that matters. And we update the first x value when it no longer
-;; will appear on the screen.
-;; I don't know if fixing that will resolve the problem with cl-geometry, let's see.
-
 (defsketch snowscene
     ((width 600)
      (height 500)
@@ -132,6 +105,7 @@
   (incf steps)
   (loop for first-x on first-xs
         for dx in peak-dxs
+        do (decf (car first-x) dx)
         when (<= (car first-x) (- peak-gap))
           do (incf (car first-x) peak-gap)))
 

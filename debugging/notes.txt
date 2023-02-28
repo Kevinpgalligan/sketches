@@ -1,3 +1,4 @@
+# First bug
 ### Observations
 - Idea for why the movement may look choppy: the overall x position of the screen may be moving out of sync with how we move the relative x value across the screen. Not sure exactly why that would make things look choppy, need to think through the consequences.
 - I've recreated the visual glitches and shared them here: https://github.com/vydd/sketch/issues/15
@@ -47,3 +48,8 @@ Buggy case points:
  376.3049087037839d0 500 385.6220358171881d0 520 391.78981316852196d0 540
  391.49419299873205d0 560 383.33900936892644d0 580 371.02021909136465d0 600
  358.7014288138029d0 600 500 0 500)
+
+# Second bug
+Proposed solution: when fetching the y value of a line segment, check if x = the start point of L, and if it is then take y = the y value of the start point rather than trying to evaluate it numerically.
+
+Problem: when deleting an edge it doesn't seem to update the x position of the sweep line. Which fails in the deletion of 9-8. So: when adding two edges, our trick puts them in the correct order by avoiding numerical precision issues. But if the very next event is the removal of one of those line segments, it will evaluate their y values at their start point and they may be in the wrong order due to numerical precision. Oh wait, if it's using the same x value then the trick will still work.
