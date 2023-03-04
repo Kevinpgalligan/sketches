@@ -53,3 +53,19 @@ Buggy case points:
 Proposed solution: when fetching the y value of a line segment, check if x = the start point of L, and if it is then take y = the y value of the start point rather than trying to evaluate it numerically.
 
 Problem: when deleting an edge it doesn't seem to update the x position of the sweep line. Which fails in the deletion of 9-8. So: when adding two edges, our trick puts them in the correct order by avoiding numerical precision issues. But if the very next event is the removal of one of those line segments, it will evaluate their y values at their start point and they may be in the wrong order due to numerical precision. Oh wait, if it's using the same x value then the trick will still work.
+
+# Phasing out cl-geometry
+This looks promising:
+
+   https://github.com/matplotlib/matplotlib/blob/39070aeaab732eca1b5b7f7b478fa8b72dab8507/lib/matplotlib/axes/_axes.py#L5232-L5235
+
+In Processing, they hand off the vertices to the Tessellator, not sure yet exactly how that works. But here in pyplot they seem to interface with OpenGL's tessellation in way that's more similar to what I've seen. Need to go back and look at Processing again, though.
+
+Here's an implementation in racket:
+- https://github.com/mflatt/glu-tessellate/blob/8efe65b35a2554be6dc613c016791ef2bf5ffb82/main.rkt
+- https://docs.racket-lang.org/glu-tessellate/index.html
+...which doesn't seem that different to what I was doing. Maybe I just need to figure out how to interface between the tessellator thing and the drawing window thing.
+
+More docs on OpenGL tessellator object, it was introduced in v1.2, apparently. In cl-opengl, callbacks are configured as methods on the tessellator object.
+
+Yes, I need to define the callbacks! Even look at the cl-opengl example: https://github.com/3b/cl-opengl/blob/e2d83e0977b7e7ac3f3d348d8ccc7ccd04e74d59/examples/redbook/tess.lisp

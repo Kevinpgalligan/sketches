@@ -1,3 +1,5 @@
+Implement Perlin noise and swap it in to see if it improves any of the sketches.
+
 - Halt & Catch Fire-esque image leaking
 - Coloured squares, squares within squares
 - Jigsaw effect
@@ -7,4 +9,4 @@
 - Colour study.
 - Tiling.
 - That graph thing in the Singapore museum.
-- Random walk where there's a funny-looking old-fashioned guy actually walking.
+- Fibonacci spiral.

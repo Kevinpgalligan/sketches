@@ -15,3 +15,25 @@
 
 (defmacro scalef (place factor)
   `(setf ,place (* ,place ,factor)))
+
+(defmacro with-gensyms ((&rest names) &body body)
+  `(let ,(loop for name in names
+               collect (list name '(gensym)))
+     ,@body))
+
+(defmacro with-centered ((window-width window-height width height) &body body)
+  (with-gensyms (x-offset y-offset)
+    `(let ((,x-offset (halve (- ,window-width ,width)))
+           (,y-offset (halve (- ,window-height ,height))))
+       (with-identity-matrix
+         (translate ,x-offset ,y-offset)
+         ,@body))))
+
+(defun round-to-nearest-multiple (x mul)
+  (let ((remainder (rem x mul)))
+    (if (< remainder (halve mul))
+        (- x remainder)
+        (+ x (- mul remainder)))))
+
+(defun outside-range-p (low high x)
+  (or (< x low) (< high x)))

@@ -13,3 +13,4 @@ Add soft link to this directory to quicklisp's local-projects folder, then from 
 * `heightmap.lisp`: testing out my implementation of value noise (for correlated randomness).
 * `rain.lisp`: rain, wind and fog. Uses 1d value noise for the wind effect, and 3d value noise for the fog (the 3 dimensions being x, y and time).
 * `unknown-pleasures.lisp`: recreation of the Unknown Pleasures album cover, uses 3d value noise to make the lines wobble over time.
+* `dots.lisp`: evenly spaced dots move about as a result of noise.

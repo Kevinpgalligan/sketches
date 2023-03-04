@@ -1,0 +1,48 @@
+(in-package sketches)
+
+(defun nearest-pulse-positions (x y pulse-spacing)
+  (let* ((xsub (rem x pulse-spacing))
+         (xadd (- pulse-spacing xsub))
+         (ysub (rem y pulse-spacing))
+         (yadd (- pulse-spacing ysub)))
+    (list
+     (vec2 (- x xsub) (- y ysub))
+     (vec2 (- x xsub) (+ y yadd))
+     (vec2 (+ x xadd) (- y ysub))
+     (vec2 (+ x xadd) (+ y yadd)))))
+
+(defsketch dots
+    ((width 500)
+     (height 500)
+     (side-length 300)
+     (dot-spacing 50)
+     (dot-diameter 10)
+     (pulse-spacing 75)
+     (pulse-strength-scale 1000)
+     (N (make-vnoise))
+     (noise-scale 0.7)
+     (t0 0)
+     (dt 0.01))
+  (background +black+)
+  (with-centered (width height side-length side-length)
+    (loop for y = 0 then (+ y dot-spacing)
+          while (<= y side-length)
+          do (loop for x = 0 then (+ x dot-spacing)
+                   while (<= x side-length)
+                   do (let* ((pos (vec2 x y))
+                             (pulse-positions (nearest-pulse-positions x y pulse-spacing))
+                             (pulse-effects
+                               (loop for pulse-pos in pulse-positions
+                                     collect (let* ((direction (v- pos pulse-pos))
+                                                    (dist (v-length direction))
+                                                    (pulse-strength
+                                                     (* pulse-strength-scale
+                                                        (noise-get N (vx pulse-pos) (vy pulse-pos) t0))))
+                                               (if (zerop dist)
+                                                   (vec2 0 0)
+                                                   (v-scale (/ pulse-strength dist)
+                                                           (v-normalise direction))))))
+                             (new-pos (reduce #'v+ pulse-effects :initial-value pos)))
+                        (with-pen (make-pen :fill +white+)
+                          (circle (vx new-pos) (vy new-pos) (halve dot-diameter)))))))
+  (incf t0 dt))

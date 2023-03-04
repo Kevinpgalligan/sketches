@@ -1,7 +1,5 @@
 (in-package sketches)
 
-(declaim (optimize (speed 0) (space 0) (debug 3)))
-
 (defparameter *noise-size* 256)
 (defparameter *permutation-table*
   (make-array (list *noise-size*)
