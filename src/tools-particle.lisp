@@ -19,10 +19,15 @@
         (v+ (pos particle) (velocity particle)))
   (when (or (outside-range-p min-x max-x (vx (pos particle)))
             (outside-range-p min-y max-y (vy (pos particle))))
-    (setf (vx (pos particle)) (mod (vx (pos particle)) max-x)
-          (vy (pos particle)) (mod (vy (pos particle)) max-y)
-          ;; Edge case: don't want particle to appear as if it's just
-          ;; teleported across the screen.
-          (prev-position particle) (pos particle)))
+    (if wrap-around
+        (setf (vx (pos particle)) (mod (vx (pos particle)) max-x)
+              (vy (pos particle)) (mod (vy (pos particle)) max-y)
+              ;; Don't want particle to appear as if it's just
+              ;; teleported across the screen.
+              (prev-position particle) (pos particle))
+        (progn
+          ;; Reverse direction so it stops going outside the bounds.
+          (scalef (vx (pos particle)) -1)
+          (scalef (vy (pos particle)) -1))))
   (setf (velocity particle)
         (v-clamp max-velocity (v+ (velocity particle) dv))))
