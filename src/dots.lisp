@@ -1,16 +1,5 @@
 (in-package sketches)
 
-(defun nearest-pulse-positions (x y pulse-spacing)
-  (let* ((xsub (rem x pulse-spacing))
-         (xadd (- pulse-spacing xsub))
-         (ysub (rem y pulse-spacing))
-         (yadd (- pulse-spacing ysub)))
-    (list
-     (vec2 (- x xsub) (- y ysub))
-     (vec2 (- x xsub) (+ y yadd))
-     (vec2 (+ x xadd) (- y ysub))
-     (vec2 (+ x xadd) (+ y yadd)))))
-
 (defsketch dots
     ((width 500)
      (height 500)
@@ -21,7 +10,6 @@
      (pulse-strength-scale 1000)
      (N (make-vnoise))
      (noise-scale 0.7)
-     (t0 0)
      (dt 0.01))
   (background +black+)
   (with-centered (width height side-length side-length)

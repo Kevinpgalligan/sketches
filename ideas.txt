@@ -1,5 +1,10 @@
-Implement Perlin noise and swap it in to see if it improves any of the sketches.
+### Drawing features
+- Perlin noise, swap it in to see if it improves any of the sketches.
+- Sampling from random distributions (normal, exponential, binomial, poisson)
+- Add missing documentation to sketch.
+- Fix bugs in sketch (copy-pixels and the cl-geometry ones).
 
+### Sketches
 - Halt & Catch Fire-esque image leaking
 - Coloured squares, squares within squares
 - Jigsaw effect

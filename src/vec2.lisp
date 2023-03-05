@@ -37,3 +37,12 @@
     (if (< length max-length)
         v
         (v-rescale max-length v))))
+
+(defun get-nearest-point-on-grid (v spacing)
+  "Finds nearest point to a vector given a grid of points with a distance
+of SPACING between each one, the point (0,0) is on the grid."
+  (vec2 (round-to-nearest-multiple (vx v) spacing)
+        (round-to-nearest-multiple (vy v) spacing)))
+
+(defun get-pos-on-unit-circle (angle-radians)
+  (vec2 (cos angle-radians) (sin angle-radians)))

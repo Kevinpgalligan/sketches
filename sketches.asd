@@ -11,6 +11,8 @@
   :serial t
   :components ((:file "package")
                (:file "tools")
+               (:file "tools-particle")
+               (:file "tools-flowfield")
                (:file "vec2")
                (:file "noise")
                (:file "stars")
@@ -18,5 +20,4 @@
                (:file "heightmap")
                (:file "unknown-pleasures")
                (:file "snow")
-               (:file "dots")
-               (:file "flowfield")))
+               (:file "scene-flowfield")))
