@@ -1,49 +1,50 @@
 (in-package sketches)
 
-;; Ideas: maybe I need to store the displacement of each dot and
-;; have a slight force that gradually brings each dot back to its
-;; original position (like a spring, further away = more pull).
-
 (defsketch dots
     ((width 500)
      (height 500)
      (side-length 300)
-     (dot-spacing 50)
+     (dot-spacing 20)
      (dot-diameter 10)
      (dot-max-displacement 40)
-     (flowfield (make-flowfield (make-vnoise) :spacing 100 :strength 3))
+     (flowfield (make-flowfield (make-vnoise) :spacing 30 :strength 0.5))
      (rng (random-state:make-generator 'random-state:mersenne-twister-64))
-     (particles (loop repeat 1
-                      collect (make-particle (random-state:random-int rng 0 side-length)
-                                             (random-state:random-int rng 0 side-length))))
+     (particles (loop repeat 3
+                      collect (make-particle (random-state:random-int rng 0 width)
+                                             (random-state:random-int rng 0 height))))
      (draw-particles nil)
-     (max-velocity 3)
-     (push-effective-distance 120)
-     (push-strength 150))
+     (max-velocity 9)
+     (push-strength 75))
   (background +black+)
-  (with-centered (width height side-length side-length)
-    (loop for particle in particles
-          do (update-particle-state! particle
-                                     (flowfield-get-effect flowfield (pos particle))
-                                     max-velocity
-                                     0
-                                     side-length
-                                     0
-                                     side-length)
-          when draw-particles
-            do (with-pen (make-pen :fill +red+)
-                 (circle (vx (pos particle)) (vy (pos particle)) 3)))
-    (loop for y = 0 then (+ y dot-spacing)
-          while (<= y side-length)
-          do (loop for x = 0 then (+ x dot-spacing)
-                   while (<= x side-length)
+  (loop for particle in particles
+        do (update-particle-state! particle
+                                   (flowfield-get-effect flowfield (pos particle))
+                                   max-velocity
+                                   0
+                                   width
+                                   0
+                                   height)
+        when (or (outside-range-p 0 width (vx (pos particle)))
+                 (outside-range-p 0 height (vy (pos particle))))
+          do (let ((to-centre (v- (vec2 (halve width) (halve height))
+                                  (pos particle))))
+               ;; Give it a boost back to the centre.
+               (setf (velocity particle) (v-rescale max-velocity to-centre)))
+        when draw-particles
+          do (with-pen (make-pen :fill +red+)
+               (circle (vx (pos particle)) (vy (pos particle)) 3)))
+  (let ((x-offset (halve (- width side-length)))
+        (y-offset (halve (- height side-length))))
+    (loop for y = y-offset then (+ y dot-spacing)
+          while (<= y (+ y-offset side-length))
+          do (loop for x = x-offset then (+ x dot-spacing)
+                   while (<= x (+ x-offset side-length))
                    do (let* ((pos (vec2 x y))
                              (displacement
                                (v-clamp dot-max-displacement
                                         (reduce #'v+
                                                 (loop for particle in particles
-                                                      collect (let* ((direction (shortest-connecting-line-in-box-with-wrap
-                                                                                 (pos particle) pos side-length side-length))
+                                                      collect (let* ((direction (v- pos (pos particle)))
                                                                      (dist (v-length direction))
                                                                      (total-strength (if (zerop dist)
                                                                                          0

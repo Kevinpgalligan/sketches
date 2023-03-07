@@ -15,4 +15,5 @@ Add soft link to this directory to quicklisp's local-projects folder, then from 
 * `unknown-pleasures`: recreation of the Unknown Pleasures album cover, uses 3d value noise to make the lines wobble over time.
 * `dots`: evenly spaced dots move about as a result of noise.
 * `scene-flow`: flow field sketch based on The Coding Train's video.
+* `dots`: particles move around a flow field and displace dots.
 * `snowscene`: mountains and snow (currently doesn't work due to a bug in sketch).
