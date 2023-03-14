@@ -20,4 +20,5 @@
                (:file "heightmap")
                (:file "unknown-pleasures")
                (:file "snow")
-               (:file "scene-flowfield")))
+               (:file "scene-flowfield")
+               (:file "dots")))
