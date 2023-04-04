@@ -2,7 +2,6 @@
 - Perlin noise, swap it in to see if it improves any of the sketches.
 - Sampling from random distributions (normal, exponential, binomial, poisson)
 - Add missing documentation to sketch.
-- Fix bugs in sketch (copy-pixels and the cl-geometry ones).
 
 ### Sketches
 - Halt & Catch Fire-esque image leaking
@@ -15,3 +14,4 @@
 - Tiling.
 - That graph thing in the Singapore museum.
 - Fibonacci spiral.
+- Artesonado Spanish-style ceiling patterns: https://en.wikipedia.org/wiki/Artesonado
