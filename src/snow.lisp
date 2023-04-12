@@ -1,7 +1,5 @@
 (in-package sketches)
 
-(declaim (optimize (speed 0) (space 0) (debug 3)))
-
 (defstruct snowflake x y vx vy r)
 
 (defsketch snowscene

@@ -21,4 +21,5 @@
                (:file "unknown-pleasures")
                (:file "snow")
                (:file "scene-flowfield")
-               (:file "dots")))
+               (:file "dots")
+               (:file "growth")))

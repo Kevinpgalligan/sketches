@@ -17,3 +17,4 @@ Add soft link to this directory to quicklisp's local-projects folder, then from 
 * `scene-flow`: flow field sketch based on The Coding Train's video.
 * `dots`: particles move around a flow field and displace dots.
 * `snowscene`: mountains and snow (currently doesn't work due to a bug in sketch).
+* `growth`: colourful blobs growing randomly.
