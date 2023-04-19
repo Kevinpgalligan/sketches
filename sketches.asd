@@ -22,4 +22,5 @@
                (:file "snow")
                (:file "scene-flowfield")
                (:file "dots")
-               (:file "growth")))
+               (:file "growth")
+               (:file "groove2")))
