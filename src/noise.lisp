@@ -20,18 +20,123 @@
 (defparameter *noisegen* (random-state:make-generator 'random-state:mersenne-twister-64))
 (defparameter *offsets-table* (make-hash-table))
 
+(defun permute (i)
+  (aref *permutation-table* (mod i *noise-size*)))
+
+(defun make-perlin-noise (dimensions &key seed)
+  (when (null seed)
+    (setf seed (random-int 3 1000000)))
+  (let* ((r (make-array (list *noise-size*)))
+         ;; We will reuse these so that we don't need to allocate
+         ;; memory / compute stuff every time the noise function is called.
+         (base-corner (loop repeat dimensions collect nil))
+         (offsets (generate-corner-offsets dimensions))
+         (num-corners (expt 2 dimensions))
+         (vals (loop repeat num-corners collect nil)))
+    ;; Create gradient vectors.
+    (let ((rng (random-state:make-generator 'random-state:mersenne-twister-64)))
+      (random-state:reseed rng seed)
+      (dotimes (i *noise-size*)
+        (setf (aref r i)
+              (if (= dimensions 1)
+                  ;; Edge case, in 1 dimension you use a scalar between -1 and 1
+                  ;; instead of a direction vector, since direction doesn't mean
+                  ;; much in 1 dimension.
+                  (list (random-state:random-float rng -1 1))
+                  (generate-point-on-unit-sphere dimensions rng)))))
+    ;; This is the interface to creating noise: a function that takes a
+    ;; point and returns a noise value.
+    (lambda (&rest point)
+      ;; Set the base corner in the grid.
+      (overwrite-list! base-corner point #'floor)
+      ;; Compute the dot product between the gradient at each corner surrounding the point, and
+      ;; the vector between the given corner and the point.
+      (loop for offset in offsets
+            for gradient = (fetch-gradient r base-corner offset)
+            for vals-cell on vals
+            do (rplaca vals-cell
+                       (if (= dimensions 1)
+                           ;; Edge case again!
+                           (let ((x (car point))
+                                 (x1 (+ (car base-corner) (car offset)))
+                                 (m (car gradient)))
+                             (* m (- x x1)))
+                           (dot-gradient-with-direction gradient base-corner offset point))))
+      ;; Now interpolate between the values.
+      (loop for x in point
+            for f = (multiple-value-bind (i fractional-part)
+                        (floor x)
+                      (declare (ignore i))
+                      fractional-part)
+            for remaining-values = num-corners then (halve remaining-values)
+            while (> remaining-values 1)
+            do (loop for (v1 . (v2 . rest)) on vals by #'cddr
+                     for vals-cell on vals
+                     for i = 0 then (+ 2 i)
+                     while (< i remaining-values)
+                     do (rplaca vals-cell (lerp v1 v2 (smoothstep f)))))
+      (remap (car vals) -1 1 0 1))))
+
+(defun overwrite-list! (xs ys f)
+  "Takes 2 lists XS and YS, of the same length. Overwrites the
+values of XS by calling the function F on each of the values of YS."
+  (loop for x-cell on xs
+        for y in ys
+        do (rplaca x-cell (funcall f y))))
+
+(defun fetch-gradient (r base-corner offset)
+  (aref r (get-gradient-index base-corner offset)))
+
+(defun get-gradient-index (base-corner offset)
+  (let ((i 0))
+    (loop for b in base-corner
+          for o in offset
+          ;; Adding b & o gives a coordinate of the corner.
+          do (setf i (permute (+ i b o))))
+    i))
+
+(defun dot-gradient-with-direction (gradient base-corner offset point)
+  ;; Take the vector that points from the corner (given by adding base-corner & offset) to
+  ;; the point, and dot it with the gradient.
+  (loop for g in gradient
+        for x in point
+        for b in base-corner
+        for o in offset
+        sum (* g (- x (+ b o)))))
+
+(defun generate-point-on-unit-sphere (dimensions rng)
+  ;; Rejection sampling: generate random points with coordinates in the
+  ;; range [-1, 1]. Keep rejecting until one of the points falls within the
+  ;; unit sphere. In higher dimensions this will take a long time because the
+  ;; volume of the sphere is relatively small compared to the cube/box. Alternatively,
+  ;; you can sample coordinates from the Gaussian distribution and the resulting
+  ;; point will be uniformly distributed over the sphere. For our target dimensions,
+  ;; this should be fine (~3 attempts on average to generate a point in 4 dimensions).
+  (let ((point (loop repeat dimensions collect nil))
+        (length 0))
+    (loop do (loop for coord on point
+                   do (setf (car coord) (random-state:random-float rng -1 1)))
+          do (setf length (list-euclidean-length point))
+          when (<= length 1)
+            return (list-normalise! point length))))
+
+(defun list-euclidean-length (list)
+  (sqrt (loop for x in list sum (square x))))
+
+(defun list-normalise! (list length)
+  (loop for remaining on list
+        do (scalef (car remaining) (/ 1 length)))
+  list)
+
 (defun make-vnoise (&key (seed 7))
   (let* ((r (make-array (list *noise-size*)))
-         (permute
-           (lambda (i)
-             (aref *permutation-table* (mod i *noise-size*))))
          (get-value
            (lambda (coords)
              ;; Here we map a multidimensional point into the 1-dimensional
              ;; array of values using the permutation table.
              (aref r
                    (reduce (lambda (x y)
-                             (funcall permute (+ x y)))
+                             (funcall #'permute (+ x y)))
                            coords
                            :initial-value 0)))))
     (random-state:reseed *noisegen* seed)

@@ -1,6 +1,6 @@
 ;; References:
 ;;   Coding Train, https://www.youtube.com/watch?v=BjoM9oKOAKY
-;;     (WATCHED, there are some useful comments such as how to
+;;     (there are some useful comments such as how to
 ;;      make the particles more liquid-like and how to optimise)
 ;;   Tyler Hobbs article, https://tylerxhobbs.com/essays/2020/flow-fields
 ;;   Steve's Makerspace, https://www.youtube.com/watch?v=oKwi8h_yTsY&list=LL&index=20&t=2s

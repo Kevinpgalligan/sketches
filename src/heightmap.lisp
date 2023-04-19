@@ -4,11 +4,13 @@
     ((width 600)
      (height 400)
      (tile-width 10)
-     (N (make-vnoise))
+     ;; Value noise versus perlin noise.
+     ;(N (make-vnoise))
+     (N (make-perlin-noise 3 :seed 7))
      (noise-coords-scale 0.02)
      ;; Time dimension.
      (z 0)
-     (dz 0.01))
+     (dz 0.05))
   (incf z dz)
   (dotimes (i (/ height tile-width))
     (dotimes (j (/ width tile-width))
