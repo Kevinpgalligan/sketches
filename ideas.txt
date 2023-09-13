@@ -13,7 +13,6 @@
 - Soft body physics: https://www.youtube.com/watch?app=desktop&v=IxdGyqhppis&pp=ygUMY29kaW5nIHRyYWlu
 
 ### TODO
-- Perlin noise, swap it in to see if it improves any of the sketches.
 - Sampling from random distributions (normal, exponential, binomial, poisson)
 - Fix the black spots in the 'growth' sketch, they didn't appear the last time I looked at it.
 - Redesign mountains sketch to avoid using polygon.
@@ -21,7 +20,7 @@
 ### Sketch contributions
 - Export useful symbols (image-width, image-height, canvas-width, canvas-height)
 - Canvas features: draw-canvas function, initialise from an image, get current colour at coordinate.
-- Save a GIF.
+- Save a GIF (update: GIF doesn't even support transparency, so maybe not the best idea after all).
 - Perlin noise.
 - Fix polygon implementation.
 - Bug: empty sketch body gives flashing green screen.

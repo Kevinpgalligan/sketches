@@ -2,8 +2,8 @@
 
 ;;;; Inspired by this:
 ;;;; https://www.reddit.com/r/commandline/comments/12gq436/does_this_look_cool/
-;;;; The last pixels seem to not be coloured in properly, for some reason.
 
+(declaim (optimize (debug 3)))
 (defclass plant ()
   ((border :initarg :border :accessor border)
    (colour :initarg :colour :accessor colour)))
@@ -28,11 +28,11 @@
 (defsketch growth
     ((width 500)
      (height 500)
-     (cell-size 5)
+     (cell-size 10)
      (width-cells (/ width cell-size))
      (height-cells (/ height cell-size))
      (copy-pixels t)
-     (num-plants 10)
+     (num-plants 5)
      (first-iteration t)
      (cells (make-array (list width-cells height-cells) :initial-element 0))
      (plants nil))
@@ -65,6 +65,8 @@
                               (y (random height-cells)))
                           (when (zerop (aref cells x y))
                             (setf (aref cells x y) i)
-                            (let ((plant (make-instance 'plant :border (list (list x y)) :colour (hash-color (+ colour-offset i)))))
+                            (let ((plant (make-instance 'plant
+                                                        :border (list (list x y))
+                                                        :colour (hash-color (+ colour-offset i)))))
                               (push plant plants))
                             (return))))))))

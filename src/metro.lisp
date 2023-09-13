@@ -1,0 +1,26 @@
+(in-package sketches)
+
+(defsketch metro
+    ((width 600)
+     (height 600)
+     (rng (random-state:make-generator 'random-state:mersenne-twister-64))
+     (seed 11)
+     (max-turns 5)
+     (station-radius 6))
+  (background +white+)
+  (random-state:reseed rng seed)
+  (let ((num-lines (random-state:random-int rng 3 10)))
+    (dotimes (i num-lines)
+      (let ((start-point (random-point rng width height))
+            (end-point (random-point rng width height))
+            (colour (hash-color i)))
+        (draw-station start-point colour station-radius)
+        (draw-station end-point colour station-radius)))))
+
+(defun random-point (rng width height)
+  (vec2 (random-state:random-int rng 0 (1- width))
+        (random-state:random-int rng 0 (1- height))))
+
+(defun draw-station (pt colour radius)
+  (with-pen (make-pen :fill colour)
+    (circle (vx pt) (vy pt) radius)))
