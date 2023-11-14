@@ -18,7 +18,7 @@
 ### TODO
 - Encapsulate each sketch in its own package.
 - Redesign mountains sketch to avoid using polygon.
-- Fix the black spots in the 'growth' sketch, they didn't appear the last time I looked at it.
+- Fix the black spots in the 'growth' sketch.
 - Sampling from random distributions (normal, exponential, binomial, poisson)
 
 ### Sketch contributions
@@ -27,6 +27,9 @@
   - Figure out dynamic between SDL2 and OpenGL.
   - Read sketch code until I understand it.
   - Figure out what double-buffering thing is about.
+    Wot I think... double-buffering can't be turned off w/ Intel graphics?
+    But turning off double buffer was a hack.
+    Better solution should use FBO somehow?
   - Actually implement it.
 * Control flow.
   - Figure out how Processing interface works.
