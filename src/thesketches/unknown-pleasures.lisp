@@ -1,6 +1,7 @@
 ;;;; Attempting to recreate Unknown Pleasures album cover.
 
-(in-package sketches)
+(sketches:def-sketch-package unknown)
+(in-package kg.sketch.unknown)
 
 (defsketch unknown
     ((width 400)

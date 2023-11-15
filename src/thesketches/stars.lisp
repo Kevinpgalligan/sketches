@@ -3,7 +3,8 @@
 ;;; a bit 'cause I couldn't understand how his projection was working.
 ;;; As a result, I think mine looks a bit worse.
 
-(in-package sketches)
+(sketches:def-sketch-package stars)
+(in-package kg.sketch.stars)
 
 (defstruct point x y z)
 

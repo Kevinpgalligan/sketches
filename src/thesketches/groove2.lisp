@@ -1,4 +1,5 @@
-(in-package sketches)
+(sketches:def-sketch-package groove2)
+(in-package kg.sketch.groove2)
 
 (defsketch groove2
     ((width 400)

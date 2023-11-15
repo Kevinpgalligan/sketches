@@ -1,4 +1,5 @@
-(in-package sketches)
+(sketches:def-sketch-package dots)
+(in-package kg.sketch.dots)
 
 (defsketch dots
     ((width 500)

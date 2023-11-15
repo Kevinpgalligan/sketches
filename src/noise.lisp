@@ -51,7 +51,7 @@
 
 (defun make-perlin-noise (dimensions &key seed)
   (when (null seed)
-    (setf seed (random-int 3 1000000)))
+    (setf seed (1+ (random 1000000))))
   (let* ((r (make-array (list *noise-size*)))
          ;; We will reuse these so that we don't need to allocate
          ;; memory / compute stuff every time the noise function is called.

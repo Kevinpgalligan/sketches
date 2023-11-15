@@ -6,21 +6,27 @@
 (defsystem sketches
   :license "MIT"
   :author "Kevin Galligan"
-  :depends-on (:sketch :random-state :alexandria)
+  :depends-on (:sketch :random-state :alexandria :closer-mop)
   :pathname "src"
   :serial t
   :components ((:file "package")
+               (:file "packaging")
                (:file "tools")
-               (:file "tools-particle")
-               (:file "tools-flowfield")
+               (:file "particle")
+               (:file "flowfield")
                (:file "vec2")
                (:file "noise")
-               (:file "stars")
-               (:file "rain")
-               (:file "heightmap")
-               (:file "unknown-pleasures")
-               (:file "snow")
-               (:file "scene-flowfield")
-               (:file "dots")
-               (:file "growth")
-               (:file "groove2")))
+               (:module "thesketches"
+                :serial t
+                :components
+                ((:file "stars")
+                 (:file "rain")
+                 (:file "heightmap")
+                 (:file "unknown-pleasures")
+                 (:file "snow")
+                 (:file "flowfield")
+                 (:file "dots")
+                 (:file "growth")
+                 (:file "groove2")
+                 (:file "mandelbrot")
+                 ))))

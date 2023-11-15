@@ -16,12 +16,13 @@
 - Guggenheim stuff.
 
 ### TODO
-- Encapsulate each sketch in its own package.
+- Fix up mandelbrot, mountains & other buggy / half-finished sketches.
 - Redesign mountains sketch to avoid using polygon.
 - Fix the black spots in the 'growth' sketch.
 - Sampling from random distributions (normal, exponential, binomial, poisson)
 
 ### Sketch contributions
+* Finish Gleefre's patch to pass :w and :h to sdl2 (avoids resize).
 * Fix the copy-pixels thing.
   - Read up on SDL2, and figure out how CL bindings work.
   - Figure out dynamic between SDL2 and OpenGL.

@@ -1,9 +1,4 @@
-;;; We're going to follow a Coding Train video that draws the
-;;; Mandelbrot set, except instead of using p5.js we're going to
-;;; use Sketch, a generative art framework for Common Lisp!
-
 ;;; Coding Train: https://www.youtube.com/watch?v=6z7GQewK-Ks
-;;; Sketch:       https://github.com/vydd/sketch
 
 ;;; Mandelbrot set:
 ;;;    "Set of complex numbers c for which the function f(z) = z^2+c
@@ -11,14 +6,10 @@
 ;;;     sequence f(0), f(f(0)), ... remains bounded by an absolute value."
 ;;; (Wikipedia).
 
-;; Complex numbers!
-(sqrt -1)
-(complex 1 1)
+(sketches:def-sketch-package mandelbrot)
+(in-package kg.sketch.mandelbrot)
 
-;; Let's drawwww.
-(in-package sketches)
-
-(defsketch mandeldemo
+(defsketch mandelbrot
     ((width 100)
      (height 100)
      (min-val -1)

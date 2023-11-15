@@ -1,4 +1,5 @@
-(in-package sketches)
+(sketches:def-sketch-package rain)
+(in-package kg.sketch.rain)
 
 (defclass drop ()
   ((x

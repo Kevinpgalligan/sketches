@@ -1,4 +1,5 @@
-(in-package sketches)
+(sketches:def-sketch-package heightmap)
+(in-package kg.sketch.heightmap)
 
 (defsketch heightmap
     ((width 600)

@@ -5,9 +5,10 @@
 ;;   Tyler Hobbs article, https://tylerxhobbs.com/essays/2020/flow-fields
 ;;   Steve's Makerspace, https://www.youtube.com/watch?v=oKwi8h_yTsY&list=LL&index=20&t=2s
 
-(in-package sketches)
+(sketches:def-sketch-package flowfield)
+(in-package kg.sketch.flowfield)
 
-(defsketch scene-flow
+(defsketch flowfield-test
     ((width 800)
      (height 600)
      (copy-pixels t)
@@ -25,5 +26,5 @@
           do (let ((dv (flowfield-get-effect flowfield (pos particle))))
                (update-particle-state! particle dv max-velocity 0 width 0 height)))))
 
-(defmethod setup ((instance scene-flow) &key &allow-other-keys)
+(defmethod setup ((instance flowfield-test) &key &allow-other-keys)
   (background +white+))

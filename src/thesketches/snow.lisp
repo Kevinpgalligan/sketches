@@ -1,8 +1,9 @@
-(in-package sketches)
+(sketches:def-sketch-package snow)
+(in-package kg.sketch.snow)
 
 (defstruct snowflake x y vx vy r)
 
-(defsketch snowscene
+(defsketch snow
     ((width 600)
      (height 500)
      ;;;; WIND STUFF.

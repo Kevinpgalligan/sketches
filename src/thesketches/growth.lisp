@@ -1,9 +1,9 @@
-(in-package sketches)
+(sketches:def-sketch-package growth)
+(in-package kg.sketch.growth)
 
 ;;;; Inspired by this:
 ;;;; https://www.reddit.com/r/commandline/comments/12gq436/does_this_look_cool/
 
-(declaim (optimize (debug 3)))
 (defclass plant ()
   ((border :initarg :border :accessor border)
    (colour :initarg :colour :accessor colour)))
