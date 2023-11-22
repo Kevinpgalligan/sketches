@@ -18,7 +18,6 @@
 ### TODO
 - Fix up mandelbrot, mountains & other buggy / half-finished sketches.
 - Redesign mountains sketch to avoid using polygon.
-- Fix the black spots in the 'growth' sketch.
 - Sampling from random distributions (normal, exponential, binomial, poisson)
 
 ### Sketch contributions
