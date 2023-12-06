@@ -46,18 +46,19 @@
         for base-x = (* dx steps)
         for rel-x-start in first-xs
         do (let ((peak-points
-                   (nconc
-                    (loop for i = 0 then (1+ i)
-                          for x-rel = (+ rel-x-start (* i peak-gap))
-                          for x = (+ base-x x-rel)
-                          collect x-rel
-                          collect (+ y-offset (* max-peak-height (noise-get N-peaks (* peak-noise-scale x) peak-index)))
-                          while (<= x-rel width))
-                    ;; Append the bottom right and bottom left corners as points so
-                    ;; that we draw the mountain over the whole screen.
-                    (list width height 0 height))))
+                   (loop for i = 0 then (1+ i)
+                         for x-rel = (+ rel-x-start (* i peak-gap))
+                         for x = (+ base-x x-rel)
+                         collect x-rel
+                         collect (+ y-offset (* max-peak-height (noise-get N-peaks (* peak-noise-scale x) peak-index)))
+                         while (<= x-rel width))))
              (with-pen (make-pen :fill peak-colour)
-               (apply #'polygon peak-points))))
+               (loop for (x1 y1 x2 y2 . rest) on peak-points
+                     by #'cddr
+                     while y2
+                     do (progn
+                          (polygon x1 y1 x1 height x2 y2)
+                          (polygon x1 height x2 y2 x2 height))))))
   (when draw-wind-vectors-p
     (dotimes (i (/ height wind-cell-size))
       (dotimes (j (/ width wind-cell-size))

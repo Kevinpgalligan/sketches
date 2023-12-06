@@ -17,7 +17,6 @@
 
 ### TODO
 - Fix up mandelbrot, mountains & other buggy / half-finished sketches.
-- Redesign mountains sketch to avoid using polygon.
 - Sampling from random distributions (normal, exponential, binomial, poisson)
 
 ### Sketch contributions

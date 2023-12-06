@@ -1,6 +1,7 @@
 (in-package sketches)
 
 (defparameter *sketch-pkg-prefix* "KG.SKETCH.")
+(defparameter *all-sketches* (list))
 
 (defun get-sketch-package-name (name)
   (concatenate 'string *sketch-pkg-prefix* (symbol-name name)))
@@ -8,8 +9,16 @@
 (defmacro def-sketch-package (name) 
   "Creates a package called {*SKETCH-PKG-PREFIX*}.{NAME} to contain code
 specific to a particular sketch."
-  `(defpackage ,(make-symbol (get-sketch-package-name name))
-     (:use :cl :sketch :sketches)))
+  `(progn
+     (when (not (member ',name *all-sketches*))
+       (push ',name *all-sketches*))
+     (defpackage ,(make-symbol (get-sketch-package-name name))
+       (:use :cl :sketch :sketches))))
+
+(defun print-all-sketches ()
+  (loop for sk in *all-sketches*
+        do (format t "~a " (string-downcase (symbol-name sk))))
+  (terpri))
 
 (defun run-sketch (name &rest rest)
   "Runs the sketch associated with the package called NAME.
