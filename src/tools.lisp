@@ -7,12 +7,14 @@
 (defun smoothstep (t0)
   (* t0 t0 (- 3 (* 2 t0))))
 
+(declaim (inline remap))
 (defun remap (x la ha lb hb)
   "Takes x from the interval [la, ha] and remaps it to the
 interval [lb, hb]. If x is outside the expected interval, then
 it gets clamped."
-  (setf x (alexandria:clamp x la ha))
-  (+ lb (* (- hb lb) (/ (- x la) (- ha la)))))
+  (min hb
+       (max lb
+            (+ lb (* (- hb lb) (/ (- x la) (- ha la)))))))
 
 (defun halve (x)
   (/ x 2))

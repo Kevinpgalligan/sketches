@@ -20,7 +20,8 @@
     (loop for (x y) in filleddot-coords
           do (circle x y 3))
     (loop for (x y) in tinydot-coords
-          do (circle x y 1))))
+          do (circle x y 1)))
+  (stop-loop))
 
 (defmethod setup ((instance groove2) &key &allow-other-keys)
   (with-slots (width

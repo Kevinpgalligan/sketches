@@ -2,7 +2,6 @@
 - Halt & Catch Fire-esque image leaking
 - Coloured squares, squares within squares
 - Jigsaw effect
-- Flow fields, layered particle trace.
 - Map of underground
 - Layers of bezier curves, colour between each layer.
 - Colour study.
@@ -12,27 +11,21 @@
 - Artesonado Spanish-style ceiling patterns: https://en.wikipedia.org/wiki/Artesonado
 - Soft body physics: https://www.youtube.com/watch?app=desktop&v=IxdGyqhppis&pp=ygUMY29kaW5nIHRyYWlu
 - Cracked glass.
-- White squares on a black grid, each square is mutated (stretched, bent, translated, rotated, whatever).
 - Guggenheim stuff.
-
-### TODO
-- Fix up mandelbrot, mountains & other buggy / half-finished sketches.
-- Sampling from random distributions (normal, exponential, binomial, poisson)
+- Recreate this: https://old.reddit.com/r/p5js/comments/youwzy/generative_impressionism_flowers_100_code/ivg57ro/
+- Fractional brownian motion (or something), some cool ideas here: https://www.reddit.com/r/generative/comments/10ytw9f/
+- Sine waves for noise: https://www.reddit.com/r/generative/comments/zor03v/sine_wave_alert_r_code/j0ufkta/?context=3
 
 ### Sketch contributions
+* Add alternative defsketch macro that allows passing mixins. This would allow, e.g., a mixin for save functionality or for a GUI with toggleable params.
 * Finish Gleefre's patch to pass :w and :h to sdl2 (avoids resize).
 * Fix the copy-pixels thing.
-  - Read up on SDL2, and figure out how CL bindings work.
-  - Figure out dynamic between SDL2 and OpenGL.
-  - Read sketch code until I understand it.
-  - Figure out what double-buffering thing is about.
-    Wot I think... double-buffering can't be turned off w/ Intel graphics?
-    But turning off double buffer was a hack.
-    Better solution should use FBO somehow?
-  - Actually implement it.
-* Control flow.
-  - Figure out how Processing interface works.
-  - Add functions to sketch. (May help to know how sketch interacts with SDL2).
+  -> It's somehow related to double-buffering.
+  -> sketch currently turns off double buffering as a hack.
+  -> That's not possible w/ Intel graphics?
+  -> Better solution to use FBO somehow? (All this according to vyyd).
+  -> Gleefre's WIP:
+     https://github.com/Gleefre/sketch/tree/gleefre/use-fbos-for-copy-pixels 
 * Record sketches.
   > Bindings for a video encoding library.
     - https://stackoverflow.com/questions/23100282/x264-encoder-api
@@ -45,6 +38,57 @@
   - Add 'octave' thing.
   - Submit to quicklisp.
   - Incorporate into sketch.
-* Bug: empty sketch body gives flashing green screen.
 * Canvas features: initialise from an image, get current colour at coordinate.
-* [BLOCKED] Fix polygon implementation.
+
+### How sketch / OpenGL / sdl2 stuff works
+Gleefre's explanation:
+
+Well, it is not too bad, and it works more or less fine.
+background is just a direct call to GL IIRC, like glClear or something
+Other primitives all are just pushing triangles with different primitives, like :triangle-fan or :triangle-strip
+Then push-vertices does the job
+There are three "modes": :gpu, which writes the vertices to a buffer and then calls glDrawArrays
+:figure, that writes vertices to a CL vector, and then later when figure is rendered it is copied to a gl's buffer and glDrawArray is called
+nil, IIUC, just doesn't draw anything
+This gl's buffer -- is just a buffer, VBO -- is configured via sketch's vao (which is defined once in the beginning of drawing.lisp)
+It is used as a streaming buffer, as described here: http://onrendering.blogspot.com/2011/10/buffer-object-streaming-in-opengl.html
+or also here (not sure): https://www.khronos.org/opengl/wiki/Buffer_Object_Streaming
+So (start-draw) just binds the VBO, VAO; but also it "orphanes" the buffer, that is, it says to OpenGL "please give me a new buffer of the same size"
+And (end-draw) just unbinds those
+And later kit.sdl2:render :around or :after method calls sdl2:swap-window or something
+
+Which tells OpenGL to swap front & back buffers, that is, to move the scene you drew to the screen
+And here is how copy-pixels t works: it assumes that there is one back buffer, which is then copied to the front buffer; and just doesn't clear it with (background ...) in the beginning of rendering
+This is why when "swapping buffers" works otherwise it is bugged
+From sdl2kit:
+(defmethod render :before ((window gl-window))
+  (with-slots (gl-context) window
+    (sdl2:gl-make-current (sdl-window window) gl-context)))
+
+(defmethod render :after ((window gl-window))
+  (when (autowrap:valid-p (sdl-window window))
+    (gl:flush)
+    (sdl2:gl-swap-window (sdl-window window))))
+
+:before method makes sure that correct gl context is loaded,
+:after method makes sure that all drawing commands are finished (gl:flush), and then swaps the window (sdl2:gl-swap-window)
+
+There is also :around method that calls next method in cl-sdl2's main thread, so that all drawing is happening in the same main thread.
+(By the way, all event handlers are also run in the main thread, so the main loop looks like this:
+-- redraw all windows that have idle-render set to T
+-- handle all events
+-- repeat)
+
+OpenGL's pipeline is like this:
+-- FBO is the destination where drawing commands are rendered, some sort of a "canvas"
+-- You can draw a number of triangles in one command, that is, glDrawArrays
+  For that you need:
+  -- put their coordinates and other attributes (like color) in a buffer -- that is, an array that is stored on GPU
+  -- they are then handled by a vertex shader, a program that runs on GPU and can apply vertex transforms for example
+    this is where all transforms are handled, mostly -- the current transform matrix is set before the glDrawArrays call, and is used in the shader.
+  -- then these triangles are rendered by OpenGL, for each triangle a set of pixels (or fragments) to be drawn is determined
+  -- these fragments are passed to the fragment shader, again a program that runs on GPU and it says which color should be used for this pixel
+    this is where color is used (which is calculated as "average color of vertices", although it also could be passed to the whole call like with the transform matrix
+    this is also how images are drawn: a texture is passed to the whole draw call, and texture coordinates are used to get a color from a picture to be drawn
+  -- these pixels / fragments can overlap, so blending is happening, that is, the final color is calculated with respect to transparency according to special rules
+    (there are different modes, sketch uses :one-minus-src-alpha or something like tis)

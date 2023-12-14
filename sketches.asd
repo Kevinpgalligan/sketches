@@ -29,4 +29,5 @@
                  (:file "growth")
                  (:file "groove2")
                  (:file "mandelbrot")
+                 (:file "squarez")
                  ))))

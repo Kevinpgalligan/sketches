@@ -20,5 +20,7 @@ To run a particular sketch from the list below, like `stars`, enter this at the 
 * `snow`: mountains and snow (currently doesn't work due to a bug in sketch).
 * `growth`: colourful blobs growing randomly.
 * `groove2`: recreation of a piece I saw at the Institute of Contemporary Art in Boston.
+* `mandelbrot`: the Mandelbrot set.
+* `squarez`: a grid of white quadrilaterals on a black background, inspired by a t-shirt I saw.
 
 In case this list is incomplete, you can run `(print-all-sketches)` to show all the available sketches.
