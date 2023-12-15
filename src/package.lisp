@@ -43,4 +43,10 @@
    :make-perlin-noise
    :make-vnoise
    :noise-get
+
+   :get-palette
+   :next-colour
+   :reset-palette
+   :shuffle-palette
+   :palette-num-colours
    ))

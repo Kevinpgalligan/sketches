@@ -1,31 +1,5 @@
 (in-package sketches)
 
-;;; Notes:
-;;; I believe, in the 1-dimensional case, the current version returns values
-;;; in the range [-1/2, 1/2]. So need to multiply it by 2.
-;;; For the N-dimensional case, the noise value in each corner is maximised when
-;;; the unit vector is aimed at the point P=(x1, x2, ..., xN). So assume that all unit
-;;; vecs in all corners are aimed at P. My intuition says that the noise value is maximised
-;;; when x_i=1/2 for all i. It doesn't make sense for the max to be anywhere else, since it's
-;;; symmetric. When x_i=1/2 for all i, the noise value at each corner is M = sqrt(\sum_{i=1}^N (1/2)^2)
-;;; = sqrt(N) 1/2. Interpolating between the corners returns M. SO, all that to say that we
-;;; need to scale by 1/M for N>1 and by 2 for N=1, so that the noise is in the range [-1, 1].
-;;; Have to confirm this somehow.
-
-;; Hmm, maybe not.
-;; SKETCHES> (let ((N (make-perlin-noise 1)))
-;;             (loop repeat 1000000
-;;                   maximizing (noise-get N (random 1000.0))))
-;; 0.7194581769112329d0
-;; SKETCHES> (let ((N (make-perlin-noise 2)))
-;;             (loop repeat 1000000
-;;                   maximizing (noise-get N (random 1000.0) (random 1000.0))))
-;; 0.842476083440197d0
-;; SKETCHES> (let ((N (make-perlin-noise 3)))
-;;             (loop repeat 1000000
-;;                   maximizing (noise-get N (random 1000.0) (random 1000.0) (random 1000.0))))
-;; 0.8220444010941788d0
-
 (defparameter *noise-size* 256)
 (defparameter *permutation-table*
   (make-array (list *noise-size*)

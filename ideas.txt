@@ -16,9 +16,10 @@
 - Fractional brownian motion (or something), some cool ideas here: https://www.reddit.com/r/generative/comments/10ytw9f/
 - Sine waves for noise: https://www.reddit.com/r/generative/comments/zor03v/sine_wave_alert_r_code/j0ufkta/?context=3
 
-### Sketch contributions
-* Add alternative defsketch macro that allows passing mixins. This would allow, e.g., a mixin for save functionality or for a GUI with toggleable params.
+### TODO
 * Finish Gleefre's patch to pass :w and :h to sdl2 (avoids resize).
+* Add colour palettes (incorporates GUI widgets and the mixin thing below).
+* Add alternative defsketch macro that allows passing mixins. This would allow, e.g., a mixin for save functionality or for a GUI with toggleable params.
 * Fix the copy-pixels thing.
   -> It's somehow related to double-buffering.
   -> sketch currently turns off double buffering as a hack.
@@ -33,12 +34,12 @@
     - https://stackoverflow.com/questions/42639008/what-is-the-yuv-format-from-the-point-of-view-of-a-beginner-who-do-not-know-ho#42639009
     - https://stackoverflow.com/questions/2940671/how-does-one-encode-a-series-of-images-into-h264-using-the-x264-c-api
   > Use bindings to save sketches.
-* Perlin noise.
-  - Extract code to a package.
-  - Add 'octave' thing.
-  - Submit to quicklisp.
-  - Incorporate into sketch.
 * Canvas features: initialise from an image, get current colour at coordinate.
+
+### Blocked
+* Perlin noise (add interface to sketch, pending addition to quicklisp).
+* New triangulation algorithm (link up with vydd).
+
 
 ### How sketch / OpenGL / sdl2 stuff works
 Gleefre's explanation:

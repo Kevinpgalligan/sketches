@@ -16,6 +16,7 @@
                (:file "flowfield")
                (:file "vec2")
                (:file "noise")
+               (:file "palette")
                (:module "thesketches"
                 :serial t
                 :components
@@ -30,4 +31,5 @@
                  (:file "groove2")
                  (:file "mandelbrot")
                  (:file "squarez")
+                 (:file "palette")
                  ))))
