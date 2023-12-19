@@ -18,7 +18,6 @@
 
 ### TODO
 * Finish Gleefre's patch to pass :w and :h to sdl2 (avoids resize).
-* Add colour palettes (incorporates GUI widgets and the mixin thing below).
 * Add alternative defsketch macro that allows passing mixins. This would allow, e.g., a mixin for save functionality or for a GUI with toggleable params.
 * Fix the copy-pixels thing.
   -> It's somehow related to double-buffering.

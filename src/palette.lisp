@@ -12,8 +12,10 @@
       (apply #'rgb-255 spec)))
 
 (defparameter *raw-palettes*
-  '((:test ("#aabbcc" "#001122"))
-    (:test2 ("#abc123" "#ffffff"))))
+  '((:sadiq ("#897C84" "#365E31" "#626A5E" "#AE5F44" "#3BA061" "#579B69"
+             "#CBB058" "#4C7594" "#5FBDCA" "#36B3C9" "#9EADAE" "#D7C9AB"
+             "#FBCCB9" "#F1DDD8"))
+    ))
 
 (loop for raw-palette in *raw-palettes*
       do (apply #'add-palette raw-palette))
