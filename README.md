@@ -17,10 +17,12 @@ To run a particular sketch from the list below, like `stars`, enter this at the 
 * `unknown`: recreation of the Unknown Pleasures album cover, uses 3d value noise to make the lines wobble over time.
 * `flowfield`: flow field sketch based on The Coding Train's video.
 * `dots`: particles move around a flow field and displace dots.
-* `snow`: mountains and snow (currently doesn't work due to a bug in sketch).
+* `snow`: mountains and snow.
 * `growth`: colourful blobs growing randomly.
 * `groove2`: recreation of a piece I saw at the Institute of Contemporary Art in Boston.
 * `mandelbrot`: the Mandelbrot set.
 * `squarez`: a grid of white quadrilaterals on a black background, inspired by a t-shirt I saw.
+* `xmas`: recursive Christmas trees, in the colours of Palestine.
+* `invaders`: a skeleton implementation of Space Invaders that I did for my Recurse Center application.
 
 In case this list is incomplete, you can run `(print-all-sketches)` to show all the available sketches.

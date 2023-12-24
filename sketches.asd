@@ -32,4 +32,6 @@
                  (:file "mandelbrot")
                  (:file "squarez")
                  (:file "palette")
+                 (:file "xmas")
+                 (:file "invaders")
                  ))))

@@ -1,0 +1,31 @@
+The old way:
+> initialize-sketch (set up sdl2 stuff, basically)
+> sdl2 window constructor
+> base sketch class constructor
+> specific sketch class constructor
+> initialize-environment 
+> (prepare ...) sets user-provided slot values, which may
+  depend on the defaults
+> initialize-gl
+> kit.sdl2:start
+
+Questions:
+1. What is passed to the constructors, if anything?
+   -> I think it's just the defaults, initforms.
+      This seems likely because firstly, we're directly callin'
+      make-instance to create the object. With no extra args or
+      sneaky macros. Secondly, initforms are provided for all
+      slots.
+2. Which setters get called in (prepare ...)?
+    -> All of the "bindings". This includes each binding provided by
+       the user, and the bindings/slots from the sketch base class.
+
+Possible solution:
+- As Gleefre suggested, change (prepare ...) to an (initialize-instance :before).
+- Instead of using the accessors to provide defaults for the kwargs, take
+  the initform directly from the binding.
+- Since (prepare ...) uses the accessor for bindings with defaults, it may depend
+  on fancy initialisation done in the constructors... but I don't think so.
+- Needs further thought for redefining classes. Maybe we can keep (prepare ...)
+  after all. For prepare, we use the accessor. For initialize-instance, we use
+  the initform.

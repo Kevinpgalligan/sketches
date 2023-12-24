@@ -26,37 +26,28 @@
     (rect (* cell-size x) (* cell-size y) cell-size cell-size)))
 
 (defsketch growth
-    ((width 500)
-     (height 500)
+    ((width 400)
+     (height 400)
      (cell-size 10)
      (width-cells (/ width cell-size))
      (height-cells (/ height cell-size))
      (copy-pixels t)
      (num-plants 5)
-     (first-iteration t)
      (cells (make-array (list width-cells height-cells) :initial-element 0))
      (plants nil))
   (loop for plant in plants
         for i = 1 then (1+ i)
         when (border plant)
           do (let ((point (nth (random (length (border plant))) (border plant))))
-               (when first-iteration
-                 (fill-point plant i (car point) (cadr point) cell-size cells))
                (loop for pt in (surrounding-points (car point) (cadr point) width-cells height-cells cells)
                      do (destructuring-bind (x y) pt
                           (fill-point plant i x y cell-size cells)
                           (push pt (border plant))))
-               (setf (border plant) (remove point (border plant)))))
-  (setf first-iteration nil))
+               (setf (border plant) (remove point (border plant))))))
 
 (defmethod setup ((instance growth) &key &allow-other-keys)
   (background +black+)
-  (with-slots ((cells cells)
-               (cell-size cell-size)
-               (plants plants)
-               (num-plants num-plants)
-               (width-cells width-cells)
-               (height-cells height-cells))
+  (with-slots (cells cell-size plants num-plants width-cells height-cells)
       instance
     (let ((colour-offset (random 500)))
       (loop repeat num-plants
@@ -64,9 +55,9 @@
             do (loop do (let ((x (random width-cells))
                               (y (random height-cells)))
                           (when (zerop (aref cells x y))
-                            (setf (aref cells x y) i)
                             (let ((plant (make-instance 'plant
                                                         :border (list (list x y))
                                                         :colour (hash-color (+ colour-offset i)))))
+                              (fill-point plant i x y cell-size cells)
                               (push plant plants))
                             (return))))))))

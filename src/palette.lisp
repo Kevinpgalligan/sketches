@@ -15,6 +15,7 @@
   '((:sadiq ("#897C84" "#365E31" "#626A5E" "#AE5F44" "#3BA061" "#579B69"
              "#CBB058" "#4C7594" "#5FBDCA" "#36B3C9" "#9EADAE" "#D7C9AB"
              "#FBCCB9" "#F1DDD8"))
+    (:palestine ("#E4312b" "#000000" "#FFFFFF" "#149954"))
     ))
 
 (loop for raw-palette in *raw-palettes*
@@ -54,7 +55,8 @@ the colours have been exhausted."
 
 (defun shuffle-palette (palette)
   "Shuffles the ordering of colours in a palette."
-  (alexandria:shuffle (slot-value palette 'colours)))
+  (alexandria:shuffle (slot-value palette 'colours))
+  palette)
 
 (defun palette-num-colours (palette)
   "Returns number of colours in a palette."
