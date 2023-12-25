@@ -4,7 +4,6 @@
 - Jigsaw effect
 - Map of underground
 - Layers of bezier curves, colour between each layer.
-- Colour study.
 - Tiling.
 - That graph thing in the Singapore museum.
 - Fibonacci spiral.

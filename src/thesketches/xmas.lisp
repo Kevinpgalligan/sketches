@@ -13,6 +13,8 @@
      (tree-size 2000)
      (size-scale 500)
      (pal (get-palette :palestine))
+     (watermelon (load-static-resource "watermelon.png"))
+     (melon-size 100)
      (min-size (/ tree-size num-trees 3))
      (trees
       (loop for i from num-trees downto 1
@@ -33,7 +35,13 @@
                    trees))
   (when (< (length trees) num-trees)
     (push (list :size-denom size-scale :colour (next-colour pal))
-          trees)))
+          trees))
+  (with-pen (make-pen :weight 0)
+    (draw watermelon
+          (- (/ width 2) (/ melon-size 2))
+          (- (/ height 2) (/ melon-size 2))
+          :width melon-size
+          :height melon-size)))
 
 (defun draw-tree (x y width height colour)
   "Draws a Christmas tree in a rectangle where the middle of the top edge of the 

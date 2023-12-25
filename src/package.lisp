@@ -4,6 +4,8 @@
   ;; sketches are defined.
   (:export
    :def-sketch-package
+   :sketch-pkg-suffix
+   :load-static-resource
 
    :lerp
    :smoothstep

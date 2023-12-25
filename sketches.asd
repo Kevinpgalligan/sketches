@@ -17,6 +17,7 @@
                (:file "vec2")
                (:file "noise")
                (:file "palette")
+               (:file "resources")
                (:module "thesketches"
                 :serial t
                 :components

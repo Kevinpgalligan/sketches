@@ -32,3 +32,17 @@ Currently, there is no support for defining multiple sketches per package."
     (if sketch-class
         (apply #'make-instance sketch-class rest)
         (error "No sketch exists within the named package."))))
+
+(defun sketch-pkg-suffix ()
+  "Returns suffix of the package of the currently-running sketch, or NIL
+if it's not in a sub-package."
+  ;; Cheating by using *sketch*.
+  (let ((name (package-name
+               (symbol-package
+                (class-name
+                 (class-of sketch::*sketch*)))))
+        (prefix-len (length *sketch-pkg-prefix*)))
+    (if (string= *sketch-pkg-prefix*
+                 (subseq name 0 prefix-len))
+        (subseq name prefix-len)
+        nil)))
