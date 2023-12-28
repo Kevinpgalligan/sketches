@@ -14,6 +14,7 @@
 - Recreate this: https://old.reddit.com/r/p5js/comments/youwzy/generative_impressionism_flowers_100_code/ivg57ro/
 - Fractional brownian motion (or something), some cool ideas here: https://www.reddit.com/r/generative/comments/10ytw9f/
 - Sine waves for noise: https://www.reddit.com/r/generative/comments/zor03v/sine_wave_alert_r_code/j0ufkta/?context=3
+- https://github.com/jasonwebb/2d-differential-growth-experiments
 
 ### TODO
 * Finish Gleefre's patch to pass :w and :h to sdl2 (avoids resize).

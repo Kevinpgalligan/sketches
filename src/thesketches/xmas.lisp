@@ -14,7 +14,7 @@
      (size-scale 500)
      (pal (get-palette :palestine))
      (watermelon (load-static-resource "watermelon.png"))
-     (melon-size 100)
+     (melon-size 150)
      (min-size (/ tree-size num-trees 3))
      (trees
       (loop for i from num-trees downto 1
