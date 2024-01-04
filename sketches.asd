@@ -35,4 +35,5 @@
                  (:file "palette")
                  (:file "xmas")
                  (:file "invaders")
+                 (:file "lorenz")
                  ))))
