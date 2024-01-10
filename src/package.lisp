@@ -32,6 +32,7 @@
    :vec2
    :vx
    :vy
+   :v=
    :v+
    :v-
    :v-scale

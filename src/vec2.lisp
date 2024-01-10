@@ -6,6 +6,11 @@
 (defun vx (v) (car v))
 (defun vy (v) (cadr v))
 
+(defun v= (v1 v2)
+  (loop for x1 in v1
+        for x2 in v2
+        always (= x1 x2)))
+
 (defun (setf vx) (new-value v)
   (setf (car v) new-value))
 (defun (setf vy) (new-value v)
