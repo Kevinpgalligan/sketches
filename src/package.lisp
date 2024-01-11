@@ -30,6 +30,7 @@
    :flowfield-inc-time!
 
    :vec2
+   :v-copy
    :vx
    :vy
    :v=
@@ -42,6 +43,7 @@
    :v-clamp
    :get-nearest-point-on-grid
    :get-pos-on-unit-circle
+   :v-dot
 
    :make-perlin-noise
    :make-vnoise
