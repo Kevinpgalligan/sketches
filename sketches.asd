@@ -36,4 +36,6 @@
                  (:file "xmas")
                  (:file "invaders")
                  (:file "lorenz")
+                 (:file "toast")
+                 (:file "reaction-diffusion")
                  ))))

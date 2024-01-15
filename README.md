@@ -24,5 +24,8 @@ To run a particular sketch from the list below, like `stars`, enter this at the 
 * `squarez`: a grid of white quadrilaterals on a black background, inspired by a t-shirt I saw.
 * `xmas`: recursive Christmas trees, in the colours of Palestine.
 * `invaders`: a skeleton implementation of Space Invaders that I did for my Recurse Center application.
+* `toast`: a piece of toast that bounces and always lands on the wrong side, contains a crappy/non-general implementation of Verlet physics.
+* `reaction-diffusion`: visualisation of the reaction diffusion model, based on a Coding Train video.
+* `palette`: for testing out colour palettes.
 
 In case this list is incomplete, you can run `(print-all-sketches)` to show all the available sketches.

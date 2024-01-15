@@ -1,3 +1,5 @@
+;;;; Namespacing for all my sketches.
+
 (in-package sketches)
 
 (defparameter *sketch-pkg-prefix* "KG.SKETCH.")
