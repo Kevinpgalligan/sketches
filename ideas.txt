@@ -107,3 +107,25 @@ OpenGL's pipeline is like this:
     this is also how images are drawn: a texture is passed to the whole draw call, and texture coordinates are used to get a color from a picture to be drawn
   -- these pixels / fragments can overlap, so blending is happening, that is, the final color is calculated with respect to transparency according to special rules
     (there are different modes, sketch uses :one-minus-src-alpha or something like tis)
+
+
+#### Description of refactor
+Before:
+- SDL2 init (initialize-sketch)
+- create SDL2 window
+- create sketch class
+- initialize-environment
+- prepare (set window properties)
+- initialize-gl
+- run SDL2
+
+After:
+- SDL2 init (initialize-sketch)
+- create sketch class
+- prepare (but don't set window properties)
+- create sketch window (w/ stuff)
+- initialize-environment
+- initialize-gl
+- run SDL2
+
+The ONLY thing that has changed is the order we create the classes.

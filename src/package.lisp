@@ -29,18 +29,29 @@
    :flowfield-get-effect
    :flowfield-inc-time!
 
+   :vec
+   :zeros-vec
    :vec2
    :v-copy
    :vx
    :vy
+   :vz
+   :vn
+   :v-copy
    :v=
    :v+
    :v-
+   :v*
+   :v/
    :v-scale
+   :v-scale!
    :v-length
    :v-normalise
+   :v-normalise!
    :v-rescale
+   :v-rescale!
    :v-clamp
+   :v-clamp!
    :get-nearest-point-on-grid
    :get-pos-on-unit-circle
    :v-dot

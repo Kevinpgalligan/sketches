@@ -38,8 +38,8 @@
           trees))
   (with-pen (make-pen :weight 0)
     (draw watermelon
-          (- (/ width 2) (/ melon-size 2))
-          (- (/ height 2) (/ melon-size 2))
+          :x (- (/ width 2) (/ melon-size 2))
+          :y (- (/ height 2) (/ melon-size 2))
           :width melon-size
           :height melon-size)))
 

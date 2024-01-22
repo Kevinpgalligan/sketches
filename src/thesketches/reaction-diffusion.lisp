@@ -27,7 +27,7 @@
 (defsketch react
     ((width 400)
      (height 400)
-     (grid-size 100)
+     (grid-size 50)
      (grid (make-grid grid-size))
      (old-grid (make-grid grid-size))
      (dt 1.0)

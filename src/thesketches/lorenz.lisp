@@ -1,9 +1,9 @@
+;;;; The Lorenz attractor.
+;;;;  - https://thecodingtrain.com/challenges/12-lorenz-attractor
+;;;;  - https://en.wikipedia.org/wiki/Lorenz_system
+
 (sketches:def-sketch-package lorenz)
 (in-package kg.sketch.lorenz)
-
-;; See: 
-;;  - https://thecodingtrain.com/challenges/12-lorenz-attractor
-;;  - https://en.wikipedia.org/wiki/Lorenz_system
 
 (defsketch lorenz
     ((width 400)

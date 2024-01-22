@@ -14,7 +14,7 @@
                (:file "tools")
                (:file "particle")
                (:file "flowfield")
-               (:file "vec2")
+               (:file "vec")
                (:file "noise")
                (:file "palette")
                (:file "resources")

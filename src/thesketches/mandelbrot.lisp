@@ -18,8 +18,7 @@
      (max-iters 100)
      (the-set (make-mandelbrot-image width height min-val max-val max-iters bound)))
   (background +black+)
-  (with-pen (make-pen :fill (canvas-image the-set))
-    (rect 0 0 width height))
+  (draw the-set)
   (stop-loop))
 
 (defun make-mandelbrot-image (width height min-val max-val max-iters bound)
