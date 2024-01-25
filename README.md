@@ -27,5 +27,8 @@ To run a particular sketch from the list below, like `stars`, enter this at the 
 * `toast`: a piece of toast that bounces and always lands on the wrong side, contains a crappy/non-general implementation of Verlet physics.
 * `reaction-diffusion`: visualisation of the reaction diffusion model, based on a Coding Train video.
 * `palette`: for testing out colour palettes.
+* `trees.recursive`: random trees drawn using recursion.
+* `trees.oo`: random trees drawn using object-oriented modelling (with leaves!).
+* `trees.lsystem`: random trees drawn using an L-system.
 
 In case this list is incomplete, you can run `(print-all-sketches)` to show all the available sketches.

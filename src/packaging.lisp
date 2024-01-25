@@ -37,14 +37,21 @@ Currently, there is no support for defining multiple sketches per package."
 
 (defun sketch-pkg-suffix ()
   "Returns suffix of the package of the currently-running sketch, or NIL
-if it's not in a sub-package."
-  ;; Cheating by using *sketch*.
+if it's not in a sub-package. For example, for the package 'kg.sketches.trees.oo'
+it will return 'trees'. Shouldn't call it the 'suffix', in that case, but oh well."
   (let ((name (package-name
                (symbol-package
                 (class-name
-                 (class-of sketch::*sketch*)))))
+                 (class-of (get-last-sketch))))))
         (prefix-len (length *sketch-pkg-prefix*)))
     (if (string= *sketch-pkg-prefix*
                  (subseq name 0 prefix-len))
-        (subseq name prefix-len)
+        (let ((full-suffix (subseq name prefix-len)))
+          ;; If suffix is 'trees.oo', then we want to return
+          ;; just 'trees'.
+          (first (str:split "." full-suffix)))
         nil)))
+
+(defun get-last-sketch ()
+  ;; Cheating by using the internal symbol *SKETCH*.
+  sketch::*sketch*)

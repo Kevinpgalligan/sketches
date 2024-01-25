@@ -6,7 +6,7 @@
 (defsystem sketches
   :license "MIT"
   :author "Kevin Galligan"
-  :depends-on (:sketch :random-state :alexandria :closer-mop)
+  :depends-on (:sketch :random-state :alexandria :closer-mop :str)
   :pathname "src"
   :serial t
   :components ((:file "package")
@@ -18,6 +18,7 @@
                (:file "noise")
                (:file "palette")
                (:file "resources")
+               (:file "lsystem")
                (:module "thesketches"
                 :serial t
                 :components

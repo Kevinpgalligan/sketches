@@ -118,3 +118,10 @@ distance of SPACING between each one, the point (0,0) is on the grid."
   (loop for x across v1
         for y across v2
         sum (* x y)))
+
+(defun v-rotate (rad v)
+  "Returns a 2d vector V rotated by RAD radians clockwise."
+  (let ((c (cos (- rad)))
+        (s (sin (- rad))))
+    (vec2 (- (* c (vx v)) (* s (vy v)))
+          (+ (* s (vx v)) (* c (vy v))))))

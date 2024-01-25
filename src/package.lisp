@@ -6,6 +6,7 @@
    :def-sketch-package
    :sketch-pkg-suffix
    :load-static-resource
+   :get-last-sketch
 
    :lerp
    :smoothstep
@@ -55,6 +56,7 @@
    :get-nearest-point-on-grid
    :get-pos-on-unit-circle
    :v-dot
+   :v-rotate
 
    :make-perlin-noise
    :make-vnoise
@@ -65,4 +67,7 @@
    :reset-palette
    :shuffle-palette
    :palette-num-colours
+
+   :def-lsystem
+   :evaluate-lsystem
    ))
