@@ -66,7 +66,8 @@
 
 (defun v-scale! (a v)
   (loop for i from 0 below (length v)
-        do (setf (vn v i) (* a (vn v i)))))
+        do (setf (vn v i) (* a (vn v i))))
+  v)
 
 (defun v-length (v)
   (sqrt (loop for x across v
@@ -125,3 +126,9 @@ distance of SPACING between each one, the point (0,0) is on the grid."
         (s (sin (- rad))))
     (vec2 (- (* c (vx v)) (* s (vy v)))
           (+ (* s (vx v)) (* c (vy v))))))
+
+(defun perpendicular-anticlockwise (v)
+  (vec2 (vy v) (- (vx v))))
+
+(defun perpendicular-clockwise (v)
+  (v-scale! -1 (perpendicular-anticlockwise v)))

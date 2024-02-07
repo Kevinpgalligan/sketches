@@ -1,4 +1,4 @@
-;;;; Press spacebar to refresh.
+;;;; Press spacebar to make a new tree.
 ;;;; 
 ;;;; References:
 ;;;;   https://thecodingtrain.com/challenges/14-fractal-trees-recursive
@@ -116,32 +116,24 @@
 (defsketch trees
     ((pal (get-palette :sadiq))
      (theta 25)
-     ;; Getting a memory error when rounds > 5.
      (rounds 5))
   (shuffle-palette pal)
   (background (next-colour pal))
+  (translate (/ width 2) height)
   (with-pen (make-pen :stroke (next-colour pal) :weight 2)
-    (let ((instructions "F")
-          (branch-length height))
-      (loop repeat rounds
-            do (execute-instructions instructions width height branch-length theta)
-            do (setf instructions (evaluate-lsystem 'tree :axiom instructions))
-            do (setf branch-length (* 0.5 branch-length)))))
+    (let ((branch-length (* height (expt 2 (- (- rounds) 2)))))
+      (flet ((ev (c)
+               (case c
+                 (#\F
+                  (line 0 0 0 (- branch-length))
+                  (translate 0 (- branch-length)))
+                 (#\+ (rotate theta))
+                 (#\- (rotate (- theta)))
+                 (#\[ (push-matrix))
+                 (#\] (pop-matrix)))))
+        (evaluate-lsystem 'tree #'ev :depth rounds :axiom "F"))))
   (setf theta (+ 10 (random 30)))
   (stop-loop))
 
 (defmethod on-key ((instance trees) (key (eql :space)) (state (eql :keyup)))
   (start-loop))
-
-(defun execute-instructions (ins width height branch-length theta)
-  (with-current-matrix
-      (translate (/ width 2) height)
-    (loop for c across ins
-          do (case c
-               (#\F
-                (line 0 0 0 (- branch-length))
-                (translate 0 (- branch-length)))
-               (#\+ (rotate theta))
-               (#\- (rotate (- theta)))
-               (#\[ (push-matrix))
-               (#\] (pop-matrix))))))

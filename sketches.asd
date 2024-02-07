@@ -39,4 +39,6 @@
                  (:file "lorenz")
                  (:file "toast")
                  (:file "reaction-diffusion")
+                 (:file "trees")
+                 (:file "swirl")
                  ))))

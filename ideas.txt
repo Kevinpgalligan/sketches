@@ -32,9 +32,8 @@
    https://www.bit-101.com/blog/
 
 ### TODO
-* Finish Gleefre's patch to pass :w and :h to sdl2 (avoids resize).
 * Add alternative defsketch macro that allows passing mixins. This would allow, e.g., a mixin for save functionality or for a GUI with toggleable params.
-* Fix the copy-pixels thing.
+* Finish Gleefre's double buffering fix.
   -> It's somehow related to double-buffering.
   -> sketch currently turns off double buffering as a hack.
   -> That's not possible w/ Intel graphics?

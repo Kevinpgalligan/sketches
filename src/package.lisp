@@ -57,6 +57,8 @@
    :get-pos-on-unit-circle
    :v-dot
    :v-rotate
+   :perpendicular-clockwise
+   :perpendicular-anticlockwise
 
    :make-perlin-noise
    :make-vnoise
