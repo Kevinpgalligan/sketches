@@ -6,11 +6,15 @@ These are my experiments with the [Sketch](https://github.com/vydd/sketch) libra
 * random-state
 
 ### How to run
-Setup: Add soft link to this directory to quicklisp's local-projects folder, then from the REPL do `(ql:quickload 'sketches)`, then switch to the `sketches` package (`(in-package sketches)`).
-
-To run a particular sketch from the list below, like `stars`, enter this at the REPL: `(run-sketch 'stars)`.
+* Add a soft link to this directory to quicklisp's local-projects folder (`ln -s /path/to/sketches/ /quicklisp/local-projects/`).
+* You'll probably also want Sketch in your local-projects folder since quicklisp may not have the latest version.
+* From the REPL, load the system: `(ql:quickload 'sketches)`.
+* Switch to the `sketches` package: `(in-package sketches)`.
+* To run a particular sketch from the list below, like `stars`: `(run-sketch 'stars)`.
 
 ### Sketches
+In case this list is incomplete, you can run `(print-all-sketches)` to show all the available sketches.
+
 * `stars`: a star field based on The Coding Train's first coding challenge.
 * `heightmap`: testing out my implementation of value noise (for correlated randomness).
 * `rain`: rain, wind and fog. Uses 1d value noise for the wind effect, and 3d value noise for the fog (the 3 dimensions being x, y and time).
@@ -31,5 +35,3 @@ To run a particular sketch from the list below, like `stars`, enter this at the 
 * `trees.oo`: random trees drawn using object-oriented modelling (with leaves!).
 * `trees.lsystem`: random trees drawn using an L-system.
 * `swirl`: particles spiraling towards the center of the canvas and leaving a trail in their wake.
-
-In case this list is incomplete, you can run `(print-all-sketches)` to show all the available sketches.
