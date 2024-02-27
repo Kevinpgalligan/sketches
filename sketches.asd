@@ -41,4 +41,5 @@
                  (:file "reaction-diffusion")
                  (:file "trees")
                  (:file "swirl")
+                 (:file "reuleaux.lisp")
                  ))))

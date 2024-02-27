@@ -13,6 +13,8 @@
 (defun vy (v) (aref v 1))
 (defun vz (v) (aref v 2))
 (defun vn (v i) (aref v i))
+(defun vr (v) (aref v 0))
+(defun v-theta (v) (aref v 1))
 
 (defun v-copy (v)
   (copy-seq v))
@@ -30,6 +32,10 @@
   (setf (aref v 2) new-value))
 (defun (setf vn) (new-value v i)
   (setf (aref v i) new-value))
+(defun (setf vr) (new-value v)
+  (setf (aref v 0) new-value))
+(defun (setf v-theta) (new-value v)
+  (setf (aref v 1) new-value))
 
 (defmacro def-vop (name operator)
   (alexandria:with-gensyms (v1 vs i val other-v)
@@ -132,3 +138,21 @@ distance of SPACING between each one, the point (0,0) is on the grid."
 
 (defun perpendicular-clockwise (v)
   (v-scale! -1 (perpendicular-anticlockwise v)))
+
+(defun v->polar! (v)
+  "Angle is from 0->2pi."
+  (let ((x (vx v))
+        (y (vy v)))
+    (setf (vr v) (v-length v))
+    (setf (v-theta v) (atan y x))
+    v))
+
+(defun v->polar (v)
+  (v->polar! (v-copy v)))
+
+(defun v->cartesian! (v)
+  (let ((r (vr v))
+        (theta (v-theta v)))
+    (setf (vx v) (* r (cos theta)))
+    (setf (vy v) (* r (sin theta)))
+    v))

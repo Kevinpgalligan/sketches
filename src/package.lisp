@@ -38,6 +38,8 @@
    :vy
    :vz
    :vn
+   :vr
+   :v-theta
    :v-copy
    :v=
    :v+
@@ -59,6 +61,8 @@
    :v-rotate
    :perpendicular-clockwise
    :perpendicular-anticlockwise
+   :v->polar!
+   :v->polar
 
    :make-perlin-noise
    :make-vnoise
