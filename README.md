@@ -35,3 +35,4 @@ In case this list is incomplete, you can run `(print-all-sketches)` to show all 
 * `trees.oo`: random trees drawn using object-oriented modelling (with leaves!).
 * `trees.lsystem`: random trees drawn using an L-system.
 * `swirl`: particles spiraling towards the center of the canvas and leaving a trail in their wake.
+* `reuleaux`: [reuleaux triangle](https://en.wikipedia.org/wiki/Reuleaux_triangle) rotating in a square.
