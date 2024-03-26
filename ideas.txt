@@ -51,8 +51,6 @@
 
 ### Blocked
 * Perlin noise (add interface to sketch, pending addition to quicklisp).
-* New triangulation algorithm (link up with vydd).
-
 
 ### How sketch / OpenGL / sdl2 stuff works
 Gleefre's explanation:
