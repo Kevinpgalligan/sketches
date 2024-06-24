@@ -12,22 +12,23 @@
     (loop for f in fs
           sum (apply f args))))
 
-(defun draw-curve (f x-start x-end y-offset steps)
-  (apply #'polyline
-         (loop with step-size = (/ (- x-end x-start) steps)
-               for i upto steps
-               for x = (+ x-start (* i step-size))
-               collect x
-               collect (+ y-offset (funcall f x)))))
-
 (defsketch sine
     ((width 500)
      (height 500)
-     (n 5)
+     (n 100)
+     (t0 0)
+     (steps 250)
      (f (apply #'make-sum
                (loop repeat n
-                     collect (make-sine (+ 50 (random 50))
-                                        (+ 10 (random 50))
+                     collect (make-sine (+ 1/100 (random .2))
+                                        (+ 2 (random 5))
                                         (random 50))))))
-  (draw-curve f 0 width (/ height 2) 500)
-  (stop-loop))
+  (background +black+)
+  (with-pen (make-pen :stroke +white+ :weight 3)
+    (apply #'polyline
+           (loop with step-size = (/ width steps)
+                 for i upto steps
+                 for x = (* i step-size)
+                 collect x
+                 collect (+ (/ height 2) (funcall f (+ t0 x))))))
+  (incf t0 1))
