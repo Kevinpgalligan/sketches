@@ -1,9 +1,6 @@
 ;;;; Made with Tristan while at the Recurse Center.
 ;;;; Based on this Coding Train video:
 ;;;;   https://www.youtube.com/watch?v=BV9ny785UNc
-;;;; It still runs pretty slowly, despite my attempts to
-;;;; optimise the state update. The slow part might actually
-;;;; be the grid-drawing rather than the state update?
 
 (sketches:def-sketch-package reaction-diffusion)
 (in-package kg.sketch.reaction-diffusion)
@@ -30,6 +27,7 @@
      (grid-size 50)
      (grid (make-grid grid-size))
      (old-grid (make-grid grid-size))
+     (canvas (make-canvas grid-size grid-size))
      (dt 1.0)
      (da 1.0)
      (db 0.5)
@@ -38,7 +36,7 @@
   (background +black+)
   (rotatef old-grid grid)
   (update-state old-grid grid grid-size da db feed k dt)
-  (draw-grid grid grid-size width height))
+  (draw-grid grid grid-size canvas width height))
 
 (defun update-state (old-grid grid grid-size da db feed k dt)
   (declare (optimize (speed 3) (safety 0) (debug 0))
@@ -106,18 +104,18 @@
                                      (mod (+ j j-offset) grid-size)
                                      get-index)) single-float) single-float)))
 
-(defun draw-grid (grid grid-size width height)
-  (let ((cell-width (/ width grid-size))
-        (cell-height (/ height grid-size)))
-    (loop for i from 0 below grid-size
-          do (loop for j below grid-size
-                   do (with-pen
-                          (make-pen :fill
-                                    (let* ((a (aref grid i j 0))
-                                           (b (aref grid i j 1))
-                                           (c (alexandria:clamp (- a b) 0 1)))
-                                      (rgb c c c)))
-                        (rect (* j cell-width)
-                              (* i cell-height)
-                              cell-width
-                              cell-height))))))
+(defun draw-grid (grid grid-size canvas width height)
+  (canvas-unlock canvas)
+  (loop for i from 0 below grid-size
+        do (loop for j below grid-size
+                 do (let* ((a (aref grid i j 0))
+                           (b (aref grid i j 1)))
+                      (canvas-paint-gray255 canvas
+                                            (truncate
+                                             (remap (alexandria:clamp (- a b) 0 1)
+                                                    0 1
+                                                    0 255))
+                                            j
+                                            i))))
+  (canvas-lock canvas)
+  (draw canvas :width width :height height))

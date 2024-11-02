@@ -39,12 +39,12 @@
           (loop while (and (< n max-iters) (< (abs z) bound))
                 do (setf z (+ (* z z) c))
                 do (incf n))
-          (canvas-paint canvas
-                        (gray-255 (if (= n max-iters)
-                                      0
-                                      (let ((bright (remap n 0 max-iters 0 1)))
-                                        (remap (sqrt bright) 0 1 0 255))))
-                        x
-                        y))))
+          (canvas-paint-gray255 canvas
+                                (if (= n max-iters)
+                                    0
+                                    (let ((bright (remap n 0 max-iters 0 1)))
+                                      (truncate (remap (sqrt bright) 0.0 1.0 0 255))))
+                                x
+                                y))))
     (canvas-lock canvas)
     canvas))

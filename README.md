@@ -1,13 +1,10 @@
 ### Description
 These are my experiments with the [Sketch](https://github.com/vydd/sketch) library for Common Lisp, which provides a Processing-like interface for creative programming.
 
-### Requirements
-* [Sketch](https://github.com/vydd/sketch) (which comes with an extra SDL2-related installation step)
-* random-state
-
 ### How to run
 * Add a soft link to this directory to quicklisp's local-projects folder (`ln -s /path/to/sketches/ /quicklisp/local-projects/`).
-* You'll probably also want Sketch in your local-projects folder since quicklisp may not have the latest version.
+* Clone my fork of Sketch into your local-projects folder, from [here](https://github.com/Kevinpgalligan/sketch/tree/dev).
+* Follow the normal installation instructions for Sketch (includes an SDL2-specific step).
 * From the REPL, load the system: `(ql:quickload 'sketches)`.
 * Switch to the `sketches` package: `(in-package sketches)`.
 * To run a particular sketch from the list below, like `stars`: `(run-sketch 'stars)`.

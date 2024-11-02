@@ -105,24 +105,105 @@ OpenGL's pipeline is like this:
   -- these pixels / fragments can overlap, so blending is happening, that is, the final color is calculated with respect to transparency according to special rules
     (there are different modes, sketch uses :one-minus-src-alpha or something like tis)
 
+### Canvas speedup
+Steps:
+  1. Try optimising w/ type declarations, see how much faster it gets.
+     Also do profiling.
+  2. static-vectors (see phoe's article), replace-foreign-memory
+       AND/OR
+  3. shareable-vectors + memcpy
+  4. fast-io thing
 
-#### Description of refactor
-Before:
-- SDL2 init (initialize-sketch)
-- create SDL2 window
-- create sketch class
-- initialize-environment
-- prepare (set window properties)
-- initialize-gl
-- run SDL2
+Research:
+  --> "CFFI arrays versus STATIC-VECTORS"
+    https://mov.im/blog/phoe%40movim.eu/cffi-arrays-versus-static-vectors-a-comparison-SCutJQ
+  --> Possibly useful library for fast writes to static buffers.
+    https://github.com/rpav/fast-io
+  --> static-vectors `replace-foreign-memory` may be useful.
+    See:
+    https://github.com/sionescu/static-vectors/blob/master/src/impl-sbcl.lisp
+    But if we're writing to a foreign memory buffer, why not just
+    write directly to the OpenGL buffer?
 
-After:
-- SDL2 init (initialize-sketch)
-- create sketch class
-- prepare (but don't set window properties)
-- create sketch window (w/ stuff)
-- initialize-environment
-- initialize-gl
-- run SDL2
+Profiling...
+   Seems to be scaling linearly, at least.
+   600x600 canvas: 360k pixels, 0.8s => 2.22778 microseconds/pixel
+   100x100 canvas: 10,000 pixels, 0.055s => 5.5 microseconds/pixel
 
-The ONLY thing that has changed is the order we create the classes.
+Sample profiling call...
+(time (make-mandelbrot-image 100 100 -1.0 +1.0 100 16.0))
+ Evaluation took:
+  0.055 seconds of real time
+  0.055238 seconds of total run time (0.055238 user, 0.000000 system)
+  100.00% CPU
+  121,551,716 processor cycles
+  1,310,528 bytes consed
+
+There's a lot of cons-ing happening! I know cffi does cons-ing for each write. So it should be faster if we can eliminate that.
+
+Weird... seems like most consing is happening outside canvas-paint-gray255!?
+
+#<SKETCH::CANVAS {1008F8B9F3}>
+MANDELBROT> (sb-profile:report)
+  seconds  |     gc     |   consed   |  calls  |  sec/call  |  name  
+----------------------------------------------------------
+     0.791 |      0.007 | 46,155,472 |       1 |   0.790997 | MAKE-MANDELBROT-IMAGE
+     0.080 |      0.000 |  1,146,880 | 360,000 |   0.000000 | CANVAS-PAINT-GRAY255
+     0.003 |      0.000 |          0 |       1 |   0.002999 | CANVAS-LOCK
+     0.000 |      0.000 |          0 |       1 |   0.000000 | MAKE-CANVAS
+----------------------------------------------------------
+     0.874 |      0.007 | 47,302,352 | 360,003 |            | Total
+
+estimated total profiling overhead: 0.76 seconds
+overhead estimation parameters:
+  7.2e-8s/call, 2.098e-6s total profiling, 9.4800004e-7s internal profiling
+
+These functions were not called:
+ CFFI:FOREIGN-ARRAY-TO-LISP CFFI:LISP-ARRAY-TO-FOREIGN
+
+Now ran a version of make-mandelbrot-image w/ the canvas painting gone -- still takes a lot of time!
+
+MANDELBROT> (time (make-mandelbrot-image 600 600 -1.0 +1.0 100 16.0))
+Evaluation took:
+  0.646 seconds of real time
+  0.646718 seconds of total run time (0.646718 user, 0.000000 system)
+  [ Run times consist of 0.008 seconds GC time, and 0.639 seconds non-GC time. ]
+  100.15% CPU
+  1,426,182,664 processor cycles
+  23,004,816 bytes consedy
+
+So canvas painting isn't the bottleneck I thought it was. Also, Coding Train's JS version seems SLOWER than mine, unlike what I originally thought?
+It may be that my canvas-paint-gray255 works better than expected, maybe try a version w/ vanilla canvas-paint.
+
+Version w/ canvas-paint:
+
+(time (make-mandelbrot-image 600 600 -1.0 +1.0 100 16.0))
+Evaluation took:
+  1.320 seconds of real time
+  1.322146 seconds of total run time (1.322146 user, 0.000000 system)
+  [ Run times consist of 0.019 seconds GC time, and 1.304 seconds non-GC time. ]
+  100.15% CPU
+  2,914,382,680 processor cycles
+  198,736,944 bytes consed
+
+SBCL profile:
+  
+  seconds  |     gc     |    consed   |  calls  |  sec/call  |  name  
+-----------------------------------------------------------
+     1.157 |      0.019 | 143,523,152 |       1 |   1.156999 | MAKE-MANDELBROT-IMAGE
+     0.317 |      0.006 |  55,191,696 | 360,000 |   0.000001 | CANVAS-PAINT
+-----------------------------------------------------------
+     1.474 |      0.025 | 198,714,848 | 360,001 |            | Total
+
+So a ~4x speedup from using canvas-paint-gray255. Seems worth it, even though that's not the bottleneck.
+
+Now wondering how much of that is due to using defun over defmethod?
+Anyway.
+
+Okay, comparing pixel-by-pixel rect painting vs canvas w/ canvas-paint-gray-255.
+reaction diffusion sketch.
+Each drawing iteration takes...
+   0.002 seconds w/ canvas.
+   0.035 seconds w/ pixel-by-pixel.
+So it's almost a 20x speedup.
+I think it is noticeably faster to the eye, and also looks a lot better due to linear interpolation between the cells (when blowing it up).
