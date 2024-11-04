@@ -1,0 +1,60 @@
+## Current behaviour
+Investigating how the state of a Sketch / the SDL2 window gets updated when we recompile the defsketch form.
+
+#### update-instance-for-redefined-class
+Gets called once if slots are not changed, twice if changed. The second time, which is triggered by the defsketch macro calling make-instances-obsolete, it's called without the new slots.
+
+Here's the trace:
+
+WARNING: redefining PREPARE (#<STANDARD-CLASS SKETCH::BLAH>) in DEFMETHOD
+  0: (UPDATE-INSTANCE-FOR-REDEFINED-CLASS #<SKETCH::BLAH {100613FDE3}>
+                                          (SKETCH::SOMETHING) NIL NIL)
+  0: UPDATE-INSTANCE-FOR-REDEFINED-CLASS returned #<SKETCH::BLAH {100613FDE3}>
+WARNING: redefining DRAW (#<STANDARD-CLASS SKETCH::BLAH>) in DEFMETHOD
+WARNING: redefining SKETCH::RUN-BLAH in DEFUN
+#<STANDARD-CLASS SKETCH::BLAH>
+  0: (UPDATE-INSTANCE-FOR-REDEFINED-CLASS #<SKETCH::BLAH {100613FDE3}> NIL NIL
+                                          NIL)
+  0: UPDATE-INSTANCE-FOR-REDEFINED-CLASS returned #<SKETCH::BLAH {100613FDE3}
+
+After updating from this...
+
+(defsketch blah
+            ()
+          (background +blue+))
+
+...to this...
+
+(defsketch blah
+            ((something 1))
+          (background +green+))
+
+Changing the default value of a slot does not count as adding or removing a slot, and is not detected.
+
+Useful to know: the property-list arg to update-instace-for-... contains the values of removed slots, 'cause you can no longer access them using class methods.
+
+#### initialize-instance
+This isn't getting called anywhere.
+My first thought was wrong, I don't think the window is getting recreated.
+But we're calling `prepare` and setting `%setup-called` to false.
+
+#### shared-initialize
+Gets called on new class definition (NOT instances of the class).
+
+Trace:
+
+(SHARED-INITIALIZE #<STANDARD-CLASS SKETCH::BLAH> NIL :DIRECT-SUPERCLASSES
+                        (#<STANDARD-CLASS SKETCH:SKETCH>) :DIRECT-SLOTS
+                        ((:NAME SOMETHING :READERS (BLAH-SOMETHING) :WRITERS
+                          ((SETF BLAH-SOMETHING)) :INITARGS (:SOMETHING)
+                          SB-PCL::SOURCE
+                          #S(SB-C:DEFINITION-SOURCE-LOCATION
+                             :NAMESTRING NIL
+                             :INDICES 0)))
+                        SB-PCL::SOURCE
+                        #S(SB-C:DEFINITION-SOURCE-LOCATION
+                           :NAMESTRING NIL
+                           :INDICES 32788)
+                        SB-PCL::SAFE-P NIL :DIRECT-DEFAULT-INITARGS NIL)
+
+Also gets called for each defmethod produced by defsketch, apparently.
