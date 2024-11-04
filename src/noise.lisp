@@ -42,7 +42,7 @@
                   ;; Edge case, in 1 dimension you use a scalar between -1 and 1
                   ;; instead of a direction vector, since direction doesn't mean
                   ;; much in 1 dimension.
-                  (list (random-state:random-float rng -1 1))
+                  (list (random-state:random-float rng -1.0 1.0))
                   (generate-point-on-unit-sphere dimensions rng)))))
     ;; This is the interface to creating noise: a function that takes a
     ;; point and returns a noise value.
@@ -115,7 +115,7 @@ values of XS by calling the function F on each of the values of YS."
   (let ((point (loop repeat dimensions collect nil))
         (length 0))
     (loop do (loop for coord on point
-                   do (setf (car coord) (random-state:random-float rng -1 1)))
+                   do (setf (car coord) (random-state:random-float rng -1.0 1.0)))
           do (setf length (list-euclidean-length point))
           when (<= length 1)
             return (list-normalise! point length))))
