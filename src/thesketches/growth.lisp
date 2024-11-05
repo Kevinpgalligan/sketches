@@ -26,13 +26,14 @@
     (rect (* cell-size x) (* cell-size y) cell-size cell-size)))
 
 (defsketch growth
-    ((width 400)
-     (height 400)
-     (cell-size 10)
+    ((width 330)
+     (height 330)
+     (cell-size 30)
      (width-cells (/ width cell-size))
      (height-cells (/ height cell-size))
      (copy-pixels t)
      (num-plants 5)
+     (sleep-p nil)
      (cells (make-array (list width-cells height-cells) :initial-element 0))
      (plants nil))
   (loop for plant in plants
@@ -43,7 +44,14 @@
                      do (destructuring-bind (x y) pt
                           (fill-point plant i x y cell-size cells)
                           (push pt (border plant))))
-               (setf (border plant) (remove point (border plant))))))
+               (setf (border plant) (remove point (border plant)))))
+  (when sleep-p
+    (sleep 0.1)))
+
+(defmethod on-key ((instance growth) key state)
+  (when (and (eq state :up)
+             (eq key :space))
+    (setf (slot-value instance 'sleep-p) t)))
 
 (defmethod setup ((instance growth) &key &allow-other-keys)
   (background +black+)
