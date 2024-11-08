@@ -1,0 +1,89 @@
+Experimenting with UIOP:
+
+(setf *info* (uiop:launch-program "cat" :input :stream :output "/tmp/foo"))
+(uiop:process-info-input *info*)
+#<SB-SYS:FD-STREAM for "descriptor 5" {10061F84C3}>
+CL-USER> (write-byte 0 (uiop:process-info-input *info*))
+0
+CL-USER> (write-byte 1 (uiop:process-info-input *info*))
+1
+CL-USER> (uiop:process-alive-p *info*)
+T
+CL-USER> (uiop:close-streams *info*)
+NIL
+CL-USER> (uiop:terminate-process *info*)
+NIL
+3
+
+So, the idea is...
+
+	1. Create process.
+	2. After each call to (draw), read data from the buffer. May need to create our own static
+	   vector / FBO for this. Try shareable-vector thing from static-vectors.
+	3. Do cleanup.
+
+Need to figure out what args to pass to FFMPEG. Reading material:
+
+	- https://stackoverflow.com/questions/7238013/rawvideo-and-rgb32-values-passed-to-ffmpeg
+	- https://stackoverflow.com/questions/45899585/pipe-input-in-to-ffmpeg-stdin
+	- https://ffmpeg.org/ffmpeg-protocols.html#pipe
+
+From the above, probably need "-f rawvideo", "-pix_fmt rgba", "-i pipe:0", etc.
+
+Here's my attempt at constructing the command:
+
+   ffmpeg -r 60 -f rawvideo -pix_fmt rgba -s:v 100x100 -i pipe:0 -vcodec libx264 outputfile.mp4
+             ^                                    ^                    ^
+            fps                              dimensions             unsure which codec to use
+                                 
+
+Prototype, not working...
+
+	(let ((info (uiop:launch-program
+                      (list "ffmpeg"
+                            "-r" "1"
+                            "-f" "rawvideo"
+                            "-pix_fmt" "rgba"
+                            "-s:v" "100x100"
+                            "-i" "pipe:0"
+                            "/tmp/foo.mp4")
+                      :input :stream)))
+           (let ((stream (uiop:process-info-input info)))
+             (loop repeat (* 100 100)
+                   do (progn
+                        (write-byte 0 stream)
+                        (write-byte 0 stream)
+                        (write-byte 0 stream)
+                        (write-byte 255 stream)))
+             (loop repeat (* 100 100)
+                   do (progn
+                        (write-byte 255 stream)
+                        (write-byte 255 stream)
+                        (write-byte 255 stream)
+                        (write-byte 255 stream))))
+           (uiop:close-streams info)
+           (uiop:terminate-process info))
+
+The file is created, but on trying to open it I get...
+
+	$ vlc /tmp/foo.mp4 
+	VLC media player 3.0.9.2 Vetinari (revision 3.0.9.2-0-gd4c1aefe4d)
+	[000055cb64e055b0] main libvlc: Running vlc with the default interface. Use 'cvlc' to use vlc without interface.
+	qt5ct: using qt5ct plugin
+	qt5ct: D-Bus global menu: no
+	qt5ct: D-Bus system tray: yes
+	[00007f9110001160] mp4 demux error: cannot find any /moov/trak
+	[00007f9110001160] avformat demux error: No streams found
+
+Next up, I should try creating a file with the raw data, then get ffmpeg to read input from that file. Also, should probably add error reporting if possible, it might be dumping error messages to stderr.
+
+Okay, this worked! At least, I was able to open it and play it in mpv. 1 second of white, 1 second of black.
+
+    # Create input data (100x100 = 10000 pixels, 4 bytes per pixel).
+    $ printf '\xFF\xFF\xFF\xFF%.s' {1..10000} >/tmp/raw.bi
+	# Second frame.
+    $ printf '\x00\x00\x00\xFF%.s' {1..10000} >>/tmp/raw.bi
+    # Aaaand the command.
+    $ ffmpeg -r 1 -f rawvideo -pix_fmt rgba -s:v 100x100 -i /tmp/raw.bin /tmp/out.mp4
+
+Next step: try to recreate this using CL & uiop.
