@@ -64,10 +64,6 @@
    :v->polar!
    :v->polar
 
-   :make-perlin-noise
-   :make-vnoise
-   :noise-get
-
    :get-palette
    :next-colour
    :reset-palette

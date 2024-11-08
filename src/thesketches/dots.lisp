@@ -8,13 +8,13 @@
      (dot-spacing 20)
      (dot-diameter 10)
      (dot-max-displacement 40)
-     (flowfield (make-flowfield (make-vnoise) :spacing 30 :strength 0.5))
+     (flowfield (make-flowfield :spacing 30 :strength 0.05))
      (rng (random-state:make-generator 'random-state:mersenne-twister-64))
      (particles (loop repeat 3
                       collect (make-particle (random-state:random-int rng 0 width)
                                              (random-state:random-int rng 0 height))))
      (draw-particles nil)
-     (max-velocity 9)
+     (max-velocity 5)
      (push-strength 75))
   (background +black+)
   (loop for particle in particles
@@ -54,7 +54,10 @@
                                                 :initial-value (vec2 0 0))))
                              (shifted-pos (v+ pos displacement)))
                         (with-pen (make-pen :fill +white+)
-                          (circle (vx shifted-pos) (vy shifted-pos) (halve dot-diameter))))))))
+                          (circle (vx shifted-pos) (vy shifted-pos) (halve dot-diameter)))))))
+  ;; Show the flowfield for debugging.
+  ;(draw flowfield :width width :height height)
+  )
 
 (defun shortest-connecting-line-in-box-with-wrap (v1 v2 width height)
   "Direction vector from V1 to V2 in a rectangle where going out 1 edge will

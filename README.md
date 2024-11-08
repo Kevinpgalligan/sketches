@@ -7,7 +7,7 @@ These are my experiments with the [Sketch](https://github.com/vydd/sketch) libra
 * Follow the normal installation instructions for Sketch (includes an SDL2-specific step).
 * From the REPL, load the system: `(ql:quickload 'sketches)`.
 * Switch to the `sketches` package: `(in-package sketches)`.
-* To run a particular sketch from the list below, like `stars`: `(run-sketch 'stars)`.
+* To run a particular sketch from the list below, like `stars`: `(start-sketch 'stars)`.
 
 ### Sketches
 In case this list is incomplete, you can run `(print-all-sketches)` to show all the available sketches.

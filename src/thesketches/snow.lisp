@@ -11,7 +11,6 @@
      ;; Change this to make the jumps in the wind values bigger/smaller
      ;; between cells.
      (wind-noise-scale 2.3)
-     (N-wind (make-vnoise))
      (draw-wind-vectors-p nil)
      ;;;; SNOWFLAKE STUFF.
      (flake-max-velocity 5)
@@ -24,16 +23,15 @@
                                            :r (+ 2 (random 3)))))
      ;;;; MOUNTAIN STUFF.
      (peak-y-offsets '(100 200 300))
-     (max-peak-height 150)
+     (max-peak-height 290)
      (peak-colours (list
                     (hsb-360 213 46 91)
                     (hsb-360 213 46 60)
                     (hsb-360 213 46 30)))
      (peak-dxs '(1 3 5))
-     (peak-noise-scale 0.01)
-     (peak-gap 20)
+     (peak-noise-scale 0.002)
+     (peak-gap 10)
      (first-xs '(0 0 0))
-     (N-peaks (make-vnoise))
      ;; Time dimension.
      (z 0)
      (steps 0)
@@ -50,7 +48,7 @@
                          for x-rel = (+ rel-x-start (* i peak-gap))
                          for x = (+ base-x x-rel)
                          collect x-rel
-                         collect (+ y-offset (* max-peak-height (noise-get N-peaks (* peak-noise-scale x) peak-index)))
+                         collect (+ y-offset (* max-peak-height (noise (* peak-noise-scale x) peak-index)))
                          while (<= x-rel width))))
              (with-pen (make-pen :fill peak-colour)
                (loop for (x1 y1 x2 y2 . rest) on peak-points
@@ -65,7 +63,7 @@
         (let ((cx (+ (halve wind-cell-size) (* j wind-cell-size)))
               (cy (+ (halve wind-cell-size) (* i wind-cell-size)))
               (line-length (/ wind-cell-size 3))
-              (angle (* 180 (noise-get N-wind (* wind-noise-scale i) (* wind-noise-scale j) z))))
+              (angle (* 180 (noise (* wind-noise-scale i) (* wind-noise-scale j) z))))
           (with-current-matrix
             (rotate angle cx cy)
             ;; Draw a line straight down, so that when we rotate clockwise by ANGLE between
@@ -85,7 +83,7 @@
                       (j (floor (/ (snowflake-x flake) wind-cell-size)))
                       ;; Angle points somewhere to the left.
                       (phi (+ (halve pi)
-                              (* pi (noise-get N-wind (* wind-noise-scale i) (* wind-noise-scale j) z)))))
+                              (* pi (noise (* wind-noise-scale i) (* wind-noise-scale j) z)))))
                  ;; Convert from polar coordinates (radius = 1, angle is phi) to
                  ;; cartesian (is that the name?) coordinates. All done manually, avoiding
                  ;; the decision of which vector library to use.
@@ -115,3 +113,6 @@
         (< (+ y r) 0)
         (>= (- x r) width)
         (>= (- y r) height))))
+
+(defmethod setup ((instance snow) &key &allow-other-keys)
+  (noise-detail :lod 1 :falloff 1))

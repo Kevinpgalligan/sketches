@@ -8,10 +8,8 @@
      (height 600)
      (x-offset 40)
      (y-offset 40)
-     (N (make-perlin-noise 3))
-     (N-colour (make-vnoise))
      (x-noise-scale 0.05)
-     (y-noise-scale 5)
+     (y-noise-scale 0.03)
      (dx 5)
      (dy 10)
      (z 0) ; time
@@ -23,7 +21,7 @@
   (loop for i = 0 then (1+ i)
         for y = (+ y-offset (* i dy))
         while (< y (- height y-offset))
-        do (let ((colour (hsb (noise-get N-colour (* y-noise-scale y)) 0.8 0.8)))
+        do (let ((colour (hsb (noise y) 0.8 0.8)))
              (with-pen (make-pen :fill colour :stroke colour :weight 1.5)
                (apply #'polyline
                       (loop for j = 0 then (1+ j)
@@ -35,6 +33,9 @@
                             ;; the center.
                             collect (min y
                                          (- y (* max-height
-                                                 (noise-get N (* x-noise-scale x) (* y-noise-scale y) z)
+                                                 (noise (* x-noise-scale x) (* y-noise-scale y) z)
                                                  (smoothstep (- 1 (/ offset-from-mid (/ (- width (* 2 y-offset)) 2))))))))))))
   (incf z dz))
+
+(defmethod setup ((instance unknown) &key &allow-other-keys)
+  (noise-seed (random 100)))

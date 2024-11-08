@@ -22,7 +22,7 @@ specific to a particular sketch."
         do (format t "~a " (string-downcase (symbol-name sk))))
   (terpri))
 
-(defun run-sketch (name &rest rest)
+(defun start-sketch (name &rest rest)
   "Runs the sketch associated with the package called NAME.
 Extra arguments to the MAKE-INSTANCE call may also be passed.
 Currently, there is no support for defining multiple sketches per package."
