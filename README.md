@@ -13,9 +13,9 @@ These are my experiments with the [Sketch](https://github.com/vydd/sketch) libra
 In case this list is incomplete, you can run `(print-all-sketches)` to show all the available sketches.
 
 * `stars`: a star field based on The Coding Train's first coding challenge.
-* `heightmap`: testing out my implementation of value noise (for correlated randomness).
-* `rain`: rain, wind and fog. Uses 1d value noise for the wind effect, and 3d value noise for the fog (the 3 dimensions being x, y and time).
-* `unknown`: recreation of the Unknown Pleasures album cover, uses 3d value noise to make the lines wobble over time.
+* `heightmap`: testing out my implementation of correlated noise.
+* `rain`: rain, wind and fog.
+* `unknown`: recreation of the Unknown Pleasures album cover, uses noise to make the lines wobble over time.
 * `flowfield`: flow field sketch based on The Coding Train's video.
 * `dots`: particles move around a flow field and displace dots.
 * `snow`: mountains and snow.

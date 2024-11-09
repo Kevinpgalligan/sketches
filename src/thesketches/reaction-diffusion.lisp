@@ -117,5 +117,5 @@
                                                     0 255))
                                             j
                                             i))))
-  (canvas-lock canvas)
-  (draw canvas :width width :height height))
+  (canvas-lock canvas :mag-filer :nearest :min-filter :nearest)
+  (draw canvas :width width :height height :mag-filter :nearest :min-filter :nearest))

@@ -69,7 +69,7 @@
      (fog-noise-scale 0.1)
      (canvas (make-canvas (/ width fog-tile-interval)
                           (/ height fog-tile-interval)))
-     (max-fog 0.2)
+     (max-fog 0.8)
      ;; Wind changes over time.
      (t0 0)
      (dt 0.006)

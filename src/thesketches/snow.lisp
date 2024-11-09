@@ -29,7 +29,9 @@
                     (hsb-360 213 46 60)
                     (hsb-360 213 46 30)))
      (peak-dxs '(1 3 5))
-     (peak-noise-scale 0.002)
+     ;; Making this lower makes the mountain curves smoother, higher
+     ;; makes it rougher.
+     (peak-noise-scale 0.005)
      (peak-gap 10)
      (first-xs '(0 0 0))
      ;; Time dimension.
@@ -115,4 +117,4 @@
         (>= (- y r) height))))
 
 (defmethod setup ((instance snow) &key &allow-other-keys)
-  (noise-detail :lod 1 :falloff 1))
+  (noise-detail :lod 4))

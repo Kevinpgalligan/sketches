@@ -32,8 +32,9 @@
      (width-cells (/ width cell-size))
      (height-cells (/ height cell-size))
      (copy-pixels t)
-     (num-plants 5)
+     (num-plants 7)
      (sleep-p nil)
+     (palette (get-palette :sadiq))
      (cells (make-array (list width-cells height-cells) :initial-element 0))
      (plants nil))
   (loop for plant in plants
@@ -48,17 +49,16 @@
 
 (defmethod setup ((instance growth) &key &allow-other-keys)
   (background +black+)
-  (with-slots (cells cell-size plants num-plants width-cells height-cells)
+  (with-slots (cells cell-size plants num-plants width-cells height-cells palette)
       instance
-    (let ((colour-offset (random 500)))
-      (loop repeat num-plants
-            for i = 1 then (1+ i)
-            do (loop do (let ((x (random width-cells))
-                              (y (random height-cells)))
-                          (when (zerop (aref cells x y))
-                            (let ((plant (make-instance 'plant
-                                                        :border (list (list x y))
-                                                        :colour (hash-color (+ colour-offset i)))))
-                              (fill-point plant i x y cell-size cells)
-                              (push plant plants))
-                            (return))))))))
+    (loop repeat num-plants
+          for i = 1 then (1+ i)
+          do (loop do (let ((x (random width-cells))
+                            (y (random height-cells)))
+                        (when (zerop (aref cells x y))
+                          (let ((plant (make-instance 'plant
+                                                      :border (list (list x y))
+                                                      :colour (next-colour palette))))
+                            (fill-point plant i x y cell-size cells)
+                            (push plant plants))
+                          (return)))))))

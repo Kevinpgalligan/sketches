@@ -20,7 +20,7 @@ So, the idea is...
 	1. Create process.
 	2. After each call to (draw), read data from the buffer. May need to create our own static
 	   vector / FBO for this. Try shareable-vector thing from static-vectors.
-	3. Do cleanup.
+	3. Do cleanup when window is closed.
 
 Need to figure out what args to pass to FFMPEG. Reading material:
 
@@ -60,7 +60,8 @@ Prototype, not working...
                         (write-byte 255 stream)
                         (write-byte 255 stream)
                         (write-byte 255 stream)
-                        (write-byte 255 stream))))
+                        (write-byte 255 stream)))
+              (force-output stream))
            (uiop:close-streams info)
            (uiop:terminate-process info))
 
@@ -87,3 +88,33 @@ Okay, this worked! At least, I was able to open it and play it in mpv. 1 second 
     $ ffmpeg -r 1 -f rawvideo -pix_fmt rgba -s:v 100x100 -i /tmp/raw.bin /tmp/out.mp4
 
 Next step: try to recreate this using CL & uiop.
+
+THIS WORKS.
+
+(let ((info (uiop:launch-program
+                      (list "ffmpeg"
+                            "-r" "1"
+                            "-f" "rawvideo"
+                            "-pix_fmt" "rgba"
+                            "-s:v" "100x100"
+                            "-i" "pipe:"
+                            "/tmp/foo.mp4")
+                      :input :stream
+                      :output :interactive
+                      :error-output :output)))
+           (let ((stream (uiop:process-info-input info)))
+             (loop repeat (* 100 100)
+                   do (progn
+                        (write-byte 0 stream)
+                        (write-byte 0 stream)
+                        (write-byte 0 stream)
+                        (write-byte 255 stream)))
+             (loop repeat (* 100 100)
+                   do (progn
+                        (write-byte 255 stream)
+                        (write-byte 255 stream)
+                        (write-byte 255 stream)
+                        (write-byte 255 stream)))
+             (force-output stream))
+           (uiop:close-streams info)
+           (uiop:wait-process info))
