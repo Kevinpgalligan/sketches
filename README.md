@@ -1,7 +1,7 @@
 ### Description
 These are my experiments with the [Sketch](https://github.com/vydd/sketch) library for Common Lisp, which provides a Processing-like interface for creative programming.
 
-![Clips of some example sketches.](https://github.com/Kevinpgalligan/sketches/blob/master/examples.mp4)
+https://github.com/user-attachments/assets/25d78de7-db0d-4d43-920b-6be973a1091a
 
 ### How to run
 * Add a soft link to this directory to quicklisp's local-projects folder (`ln -s /path/to/sketches/ /quicklisp/local-projects/`).
