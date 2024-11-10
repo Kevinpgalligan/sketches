@@ -18,6 +18,7 @@
                (:file "palette")
                (:file "resources")
                (:file "lsystem")
+               (:file "widgets")
                (:module "thesketches"
                 :serial t
                 :components
