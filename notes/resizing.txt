@@ -1,0 +1,32 @@
+## Brainstorming
+Setting window size, we pass it on to sdl2:set-window-size and we change
+the view matrix. That is, assuming the window exists.
+This also triggers a window-resize event, at which point we... set the width/height and init the view matrix again. I assume the event isn't triggered if the width/height haven't changed, 'cause otherwise we'd be doing this in an endless loop.
+
+So really, this is only getting triggered after we redefine the sketch.
+
+I think resize events are triggered by the user dragging the screen.
+That SHOULD lead to us setting width & height, and redoing the view matrix init. Should only happen with resizable=t, I think. But I should check that.
+   ---> yep
+
+When the user recompiles, on the other hand...
+
+IF dimensions change, we'll set dimensions-changed-p.
+That should lead to closing the window and recreating it, in update-whatever.
+This could break record-sketch, so... record-sketch probably needs to set a slot to freeze the window. And it needs to force resizable to nil.
+
+Actually, just call the `on-close` hooks and then clear them. It's fine if they fuck up their video, they should know better than to resize.
+
+SCRATCH MOST OF THAT. SDL2 window resizing DOES work, I just happened to have the default set to "don't reset slots when sketch is redefined", which meant the new width/height weren't getting propagated to SDL2.
+
+So now the question is... drawing to the buffer.
+When are width/height updated after sketch redefinition? And when do we need to create a new buffer?
+
+Good news -- OpenGL doesn't shit the bed when FBO is too small or too big.
+Too big: just shows a portion of it.
+Too small: parts outside the FBO must be discarded, rest of the window is blank.
+
+Actually, I don't think this is worth the effort.
+
+## TODO
+- Fix the restart-on-change commit (default t, and don't call initialize-fbo unnecessarily).
