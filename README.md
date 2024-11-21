@@ -38,3 +38,4 @@ In case this list is incomplete, you can run `(print-all-sketches)` to show all 
 * `lsystems.koch`: a variant of the Koch curve.
 * `lsystems.sierspinski`: the Sierspinski triangle.
 * `terrain`: using noise to generate islands and mountains.
+* `nested-squares`: squares inside squares.

@@ -5,14 +5,14 @@
    (velocity :initarg :velocity :accessor velocity)
    (prev-position :initarg :prev-position :accessor prev-position)))
 
-(defun make-particle (x y)
+(defun make-particle (x y &key (vx 0) (vy 0))
   (let ((initial-position (vec2 x y)))
     (make-instance 'particle
                    :pos initial-position
-                   :velocity (vec2 0 0)
+                   :velocity (vec2 vx vy)
                    :prev-position initial-position)))
 
-(defun update-particle-state! (particle dv max-velocity min-x max-x min-y max-y &key wrap-around-p)
+(defun update-particle-state! (particle dv max-speed min-x max-x min-y max-y &key wrap-around-p)
   "dv: change in velocity"
   (setf (prev-position particle) (pos particle))
   (setf (pos particle)
@@ -26,4 +26,4 @@
           ;; teleported across the screen.
           (prev-position particle) (pos particle)))
   (setf (velocity particle)
-        (v-clamp max-velocity (v+ (velocity particle) dv))))
+        (v-clamp max-speed (v+ (velocity particle) dv))))

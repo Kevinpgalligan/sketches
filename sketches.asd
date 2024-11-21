@@ -44,4 +44,6 @@
                  (:file "reuleaux")
                  (:file "lsystems")
                  (:file "terrain")
+                 (:file "nested-squares")
+                 (:file "dandy")
                  ))))

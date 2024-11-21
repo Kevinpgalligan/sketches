@@ -19,7 +19,6 @@
 - Hakka-inspired collage-style rendering of a picture; edge detction on image to make shape, voronoi to divide shape into triangles (?), group triangles randomly, fill in each group with a random cropped part of an image.
 - 3D rendering.
 - Coloured squares, squares within squares
-- Terrain generation (noise map, colour squares differently based on ranges)
 - Soft body physics: https://www.youtube.com/watch?app=desktop&v=IxdGyqhppis&pp=ygUMY29kaW5nIHRyYWlu
 - Map of underground
 - Splines (she also did one on Bezier curves): https://www.reddit.com/r/gamedev/comments/zp3x9r/freya_holm%C3%A9r_the_continuity_of_splines/
