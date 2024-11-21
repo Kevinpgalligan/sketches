@@ -1,0 +1,25 @@
+(sketches:def-sketch-package terrain)
+(in-package kg.sketch.terrain)
+
+(defsketch terrain
+    ((width 200 :tweakable t)
+     (height 200 :tweakable t)
+     (canvas (make-canvas width height))
+     (restart-on-change nil))
+  (noise-seed (random 5000))
+  (dotimes (i width)
+    (dotimes (j height)
+      (fill-terrain canvas i j)))
+  (draw canvas)
+  (stop-loop))
+
+(defun fill-terrain (canvas i j)
+  (let ((n (* 120 (noise (* 0.02 i) (* 0.02 j)))))
+    (multiple-value-bind (r g b)
+        (cond
+          ((< n 58) (values 20 20 255))
+          ((< n 61) (values 194 178 128))
+          ((< n 67) (values 20 200 20))
+          ((< n 75) (values 120 120 120))
+          (t (values 255 255 255)))
+      (canvas-paint-rgba255 canvas r g b 255 i j))))

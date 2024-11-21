@@ -48,5 +48,5 @@
                 (translate line-length 0))
                (#\+ (rotate (- angle)))
                (#\- (rotate angle)))))
-      (evaluate-lsystem 'sierspinksi #'ev :depth depth :axiom "F-G-G")))
+      (evaluate-lsystem 'sierspinski #'ev :depth depth :axiom "F-G-G")))
   (stop-loop))

@@ -1,17 +1,36 @@
-### Sketches
 - Halt & Catch Fire-esque image leaking
+  (probably needs: initialise from an image, get current colour at coordinate).
+- ;; Useful utils...
+  (do-along-path (:parametric z
+				  :old-x old-x
+                  :old-y old-y
+				  :start 0
+                  :end 10
+				  :step 0.1)
+    (* z (cos z)) ; x
+    (* z (sin z)) ; y
+    (line old-x old-y x y))
+  ;; Use this to generate a path, parametric curve.
+  ;; Maybe "memory" can be a parameter. So if you request 2 old values,
+  ;; (prev 0) gives last one and (prev 1) gives 2nd last.
+  ;; Combine this with other tools... something that takes pairs of points
+  ;; and extrudes to generate vertices?
+  (points-generator (lambda (z) (* z (cos z))) (lambda (z) (* z (sin z))))
+- Hakka-inspired collage-style rendering of a picture; edge detction on image to make shape, voronoi to divide shape into triangles (?), group triangles randomly, fill in each group with a random cropped part of an image.
+- 3D rendering.
 - Coloured squares, squares within squares
-- Jigsaw effect
+- Terrain generation (noise map, colour squares differently based on ranges)
+- Soft body physics: https://www.youtube.com/watch?app=desktop&v=IxdGyqhppis&pp=ygUMY29kaW5nIHRyYWlu
 - Map of underground
-- Layers of bezier curves, colour between each layer.
+- Splines (she also did one on Bezier curves): https://www.reddit.com/r/gamedev/comments/zp3x9r/freya_holm%C3%A9r_the_continuity_of_splines/
+- Deep dive on Bezier curves: https://pomax.github.io/bezierinfo/
 - Tiling.
+- Recreate this: https://old.reddit.com/r/p5js/comments/youwzy/generative_impressionism_flowers_100_code/ivg57ro/
 - That graph thing in the Singapore museum.
 - Fibonacci spiral.
 - Artesonado Spanish-style ceiling patterns: https://en.wikipedia.org/wiki/Artesonado
-- Soft body physics: https://www.youtube.com/watch?app=desktop&v=IxdGyqhppis&pp=ygUMY29kaW5nIHRyYWlu
 - Cracked glass.
 - Guggenheim stuff.
-- Recreate this: https://old.reddit.com/r/p5js/comments/youwzy/generative_impressionism_flowers_100_code/ivg57ro/
 - Fractional brownian motion (or something), some cool ideas here: https://www.reddit.com/r/generative/comments/10ytw9f/
 - Sine waves for noise: https://www.reddit.com/r/generative/comments/zor03v/sine_wave_alert_r_code/j0ufkta/?context=3
 - https://github.com/jasonwebb/2d-differential-growth-experiments
@@ -21,8 +40,6 @@
  * https://thebookofshaders.com/11/
  * https://www.scratchapixel.com/lessons/procedural-generation-virtual-worlds/perlin-noise-part-2/perlin-noise-terrain-mesh.html
  * https://thebookofshaders.com/11/
-- Splines (she also did one on Bezier curves): https://www.reddit.com/r/gamedev/comments/zp3x9r/freya_holm%C3%A9r_the_continuity_of_splines/
-- Deep dive on Bezier curves: https://pomax.github.io/bezierinfo/
 - https://www.reddit.com/r/generative/wiki/index
 - https://thecodingtrain.com/challenges
 - YouTube channels for generative art:
@@ -30,21 +47,3 @@
    https://sighack.com/
    https://tylerxhobbs.com/essays
    https://www.bit-101.com/blog/
-
-### TODO
-* Add alternative defsketch macro that allows passing mixins. This would allow, e.g., a mixin for save functionality or for a GUI with toggleable params.
-* Finish Gleefre's double buffering fix.
-  -> It's somehow related to double-buffering.
-  -> sketch currently turns off double buffering as a hack.
-  -> That's not possible w/ Intel graphics?
-  -> Better solution to use FBO somehow? (All this according to vyyd).
-  -> Gleefre's WIP:
-     https://github.com/Gleefre/sketch/tree/gleefre/use-fbos-for-copy-pixels 
-* Record sketches.
-  > Bindings for a video encoding library.
-    - https://stackoverflow.com/questions/23100282/x264-encoder-api
-    - https://github.com/corecodec/x264/blob/master/example.c
-    - https://stackoverflow.com/questions/42639008/what-is-the-yuv-format-from-the-point-of-view-of-a-beginner-who-do-not-know-ho#42639009
-    - https://stackoverflow.com/questions/2940671/how-does-one-encode-a-series-of-images-into-h264-using-the-x264-c-api
-  > Use bindings to save sketches.
-* Canvas features: initialise from an image, get current colour at coordinate.

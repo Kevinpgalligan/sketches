@@ -43,4 +43,5 @@
                  (:file "swirl")
                  (:file "reuleaux")
                  (:file "lsystems")
+                 (:file "terrain")
                  ))))
