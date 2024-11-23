@@ -156,3 +156,6 @@ distance of SPACING between each one, the point (0,0) is on the grid."
     (setf (vx v) (* r (cos theta)))
     (setf (vy v) (* r (sin theta)))
     v))
+
+(defun polar-vec (theta r)
+  (v->cartesian! (vec2 theta r)))

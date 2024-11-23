@@ -111,11 +111,11 @@
                  do (let* ((a (aref grid i j 0))
                            (b (aref grid i j 1)))
                       (canvas-paint-gray255 canvas
+                                            j
+                                            i
                                             (truncate
                                              (remap (alexandria:clamp (- a b) 0 1)
                                                     0 1
-                                                    0 255))
-                                            j
-                                            i))))
+                                                    0 255))))))
   (canvas-lock canvas :mag-filer :nearest :min-filter :nearest)
   (draw canvas :width width :height height :mag-filter :nearest :min-filter :nearest))

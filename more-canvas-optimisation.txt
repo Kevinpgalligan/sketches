@@ -1,0 +1,431 @@
+Trying to speed up canvas painting by using cffi:make-shareable-vector to store the pixels.
+
+=== Before:
+
+(let ((canvas (make-canvas 400 400)))
+          (time
+           (dotimes (i 400)
+             (dotimes (j 400)
+               (canvas-paint-rgba255 canvas i j 1 2 3 4)))))
+
+Evaluation took:
+  0.011 seconds of real time
+  0.011643 seconds of total run time (0.011643 user, 0.000000 system)
+  109.09% CPU
+  25,693,924 processor cycles
+  2,555,904 bytes consed
+
+=== After
+SKETCH> (let ((canvas (make-canvas 400 400)))
+          (time
+           (dotimes (i 400)
+             (dotimes (j 400)
+               (canvas-paint-rgba255 canvas i j 1 2 3 4)))))
+
+Evaluation took:
+  0.011 seconds of real time
+  0.011107 seconds of total run time (0.011107 user, 0.000000 system)
+  100.00% CPU
+  24,575,466 processor cycles
+  0 bytes consed
+  
+It's maybe a BIT faster. Not really noticeable. But entirely avoids cons-ing, and allows us to access the data using plain old AREF. Which I think is a win.
+
+=== Comparison with just writing to an array
+Two orders of magnitude faster, maybe SBCL infers the types better here and can do more optimisation.
+
+(let ((arr (make-array (list (* 4 400 400)) :element-type '(unsigned-byte 8))))
+          (time
+           (dotimes (i 400)
+             (dotimes (j 400)
+               (let ((pos (* 4 (+ i (* 400 j)))))
+                 (setf (aref arr pos) 1)
+                 (setf (aref arr (+ 1 pos)) 2)
+                 (setf (aref arr (+ 2 pos)) 3)
+                 (setf (aref arr (+ 3 pos)) 4))))))
+Evaluation took:
+  0.000 seconds of real time
+  0.000342 seconds of total run time (0.000291 user, 0.000051 system)
+  100.00% CPU
+  754,286 processor cycles
+  0 bytes consed
+  
+=== Adding type declarations to CANVAS-PAINT-RGBA255
+Like so:
+
+(defun canvas-paint-rgba255 (canvas x y r g b a)
+  (declare (optimize (speed 3) (debug 0) (safety 0))
+           ((unsigned-byte 8) r g b a)
+           (fixnum x y))
+  (with-slots (%vector width) canvas
+    (declare ((simple-array (unsigned-byte 8)) %vector)
+             (fixnum width))
+    (let ((pos (+ (the fixnum (* 4 x))
+                  (the fixnum (* 4 (the fixnum (* y width)))))))
+      (setf (aref %vector pos) b
+            (aref %vector (+ pos 1)) g
+            (aref %vector (+ pos 2)) r
+            (aref %vector (+ pos 3)) a))))
+
+Result is that it takes about half the time, although the test times seem to be fairly variable. Still an order of magnitude slower than writing to an array!
+
+(let ((canvas (make-canvas 400 400)))
+          (time
+           (dotimes (i 400)
+             (dotimes (j 400)
+               (canvas-paint-rgba255 canvas i j 1 2 3 4)))))
+
+Evaluation took:
+  0.005 seconds of real time
+  0.004948 seconds of total run time (0.004948 user, 0.000000 system)
+  100.00% CPU
+  10,918,056 processor cycles
+  0 bytes consed
+
+To optimise this further, I may have to look at machine code...
+
+=== Further profiling
+Putting the comparison case inside a function...
+
+(defun flib (w h)
+          (let ((arr (make-array (list (* 4 400 400)) :element-type '(unsigned-byte 8))))
+            (dotimes (i 400)
+              (dotimes (j 400)
+                (let ((pos (* 4 (+ i (* 400 j)))))
+                  (setf (aref arr pos) 1)
+                  (setf (aref arr (+ 1 pos)) 2)
+                  (setf (aref arr (+ 2 pos)) 3)
+                  (setf (aref arr (+ 3 pos)) 4))))))
+
+Then timing:
+
+
+(time (flib 0 0))
+Evaluation took:
+  0.001 seconds of real time
+  0.001403 seconds of total run time (0.001309 user, 0.000094 system)
+  100.00% CPU
+  3,084,358 processor cycles
+  640,016 bytes consed
+  
+Wha? Why cons-ing? And why an order of magnitude slower!?
+
+Now with variable width/height...
+
+(time (flib 400 400))
+Evaluation took:
+  0.006 seconds of real time
+  0.005552 seconds of total run time (0.005552 user, 0.000000 system)
+  100.00% CPU
+  12,247,938 processor cycles
+  640,016 bytes consed
+
+Taking about as long as the optimised PAINT version.
+
+Disassembled function below... compare to flib, which is 642 bytes and contains a bunch of generic calls. Then why is flib the same speed!? Oh, I forgot flib is doing all the looping. And doesn't have to make a function call each time. Maybe if I was compiling all my code with optimisations it'd be faster...
+
+Interesting that it contains slot calls -- %vector is a symbol macro, after all...
+Solution: assign %vector to a var.
+
+(defun canvas-paint-rgba255 (canvas x y r g b a)
+  (declare (optimize (speed 3) (debug 0) (safety 0))
+           ((unsigned-byte 8) r g b a)
+           (fixnum x y)
+           (canvas canvas))
+  (let ((vec (%canvas-vector canvas))
+        (width (canvas-width canvas)))
+    (declare ((simple-array (unsigned-byte 8)) vec)
+             (fixnum width))
+    (let ((pos (+ (the fixnum (* 4 x))
+                  (the fixnum (* 4 (the fixnum (* y width)))))))
+      (setf (aref vec pos) b
+            (aref vec (+ pos 1)) g
+            (aref vec (+ pos 2)) r
+            (aref vec (+ pos 3)) a))))
+
+	(disassemble 'canvas-paint-rgba255)
+	; disassembly for CANVAS-PAINT-RGBA255
+	; Size: 273 bytes. Origin: #x53491A4B                         ; CANVAS-PAINT-RGBA255
+	; A4B:       488975D0         MOV [RBP-48], RSI
+	; A4F:       48C1E702         SHL RDI, 2
+	; A53:       48897DC8         MOV [RBP-56], RDI
+	; A57:       4883EC10         SUB RSP, 16
+	; A5B:       488B55F8         MOV RDX, [RBP-8]
+	; A5F:       B902000000       MOV ECX, 2
+	; A64:       48892C24         MOV [RSP], RBP
+	; A68:       488BEC           MOV RBP, RSP
+	; A6B:       E8528813FD       CALL #x505CA2C2                 ; #<FDEFN (SB-PCL::SLOT-ACCESSOR
+																  ;          :GLOBAL ..)>
+	; A70:       488B7DC8         MOV RDI, [RBP-56]
+	; A74:       488B75D0         MOV RSI, [RBP-48]
+	; A78:       48D1FE           SAR RSI, 1
+	; A7B:       480FAFF2         IMUL RSI, RDX
+	; A7F:       48C1E602         SHL RSI, 2
+	; A83:       48D1FF           SAR RDI, 1
+	; A86:       48D1FE           SAR RSI, 1
+	; A89:       4C8D1C37         LEA R11, [RDI+RSI]
+	; A8D:       4C895DD0         MOV [RBP-48], R11
+	; A91:       4883EC10         SUB RSP, 16
+	; A95:       488B55F8         MOV RDX, [RBP-8]
+	; A99:       B902000000       MOV ECX, 2
+	; A9E:       48892C24         MOV [RSP], RBP
+	; AA2:       488BEC           MOV RBP, RSP
+	; AA5:       E8982514FD       CALL #x505D4042                 ; #<FDEFN (SB-PCL::SLOT-ACCESSOR
+																  ;          :GLOBAL ..)>
+	; AAA:       488B7DD0         MOV RDI, [RBP-48]
+	; AAE:       488B5DE0         MOV RBX, [RBP-32]
+	; AB2:       48D1FB           SAR RBX, 1
+	; AB5:       885C3A01         MOV [RDX+RDI+1], BL
+	; AB9:       4883EC10         SUB RSP, 16
+	; ABD:       488B55F8         MOV RDX, [RBP-8]
+	; AC1:       B902000000       MOV ECX, 2
+	; AC6:       48892C24         MOV [RSP], RBP
+	; ACA:       488BEC           MOV RBP, RSP
+	; ACD:       E8702514FD       CALL #x505D4042                 ; #<FDEFN (SB-PCL::SLOT-ACCESSOR
+																  ;          :GLOBAL ..)>
+	; AD2:       488B7DD0         MOV RDI, [RBP-48]
+	; AD6:       48D1E7           SHL RDI, 1
+	; AD9:       4883C702         ADD RDI, 2
+	; ADD:       48D1FF           SAR RDI, 1
+	; AE0:       488B4DE8         MOV RCX, [RBP-24]
+	; AE4:       48D1F9           SAR RCX, 1
+	; AE7:       884C3A01         MOV [RDX+RDI+1], CL
+	; AEB:       4883EC10         SUB RSP, 16
+	; AEF:       488B55F8         MOV RDX, [RBP-8]
+	; AF3:       B902000000       MOV ECX, 2
+	; AF8:       48892C24         MOV [RSP], RBP
+	; AFC:       488BEC           MOV RBP, RSP
+	; AFF:       E83E2514FD       CALL #x505D4042                 ; #<FDEFN (SB-PCL::SLOT-ACCESSOR
+																  ;          :GLOBAL ..)>
+	; B04:       488B7DD0         MOV RDI, [RBP-48]
+	; B08:       48D1E7           SHL RDI, 1
+	; B0B:       4883C704         ADD RDI, 4
+	; B0F:       48D1FF           SAR RDI, 1
+	; B12:       488B45F0         MOV RAX, [RBP-16]
+	; B16:       48D1F8           SAR RAX, 1
+	; B19:       88443A01         MOV [RDX+RDI+1], AL
+	; B1D:       4883EC10         SUB RSP, 16
+	; B21:       488B55F8         MOV RDX, [RBP-8]
+	; B25:       B902000000       MOV ECX, 2
+	; B2A:       48892C24         MOV [RSP], RBP
+	; B2E:       488BEC           MOV RBP, RSP
+	; B31:       E80C2514FD       CALL #x505D4042                 ; #<FDEFN (SB-PCL::SLOT-ACCESSOR
+																  ;          :GLOBAL ..)>
+	; B36:       488B7DD0         MOV RDI, [RBP-48]
+	; B3A:       48D1E7           SHL RDI, 1
+	; B3D:       4883C706         ADD RDI, 6
+	; B41:       48D1FF           SAR RDI, 1
+	; B44:       4C8B45D8         MOV R8, [RBP-40]
+	; B48:       49D1F8           SAR R8, 1
+	; B4B:       4488443A01       MOV [RDX+RDI+1], R8B
+	; B50:       49D1E0           SHL R8, 1
+	; B53:       498BD0           MOV RDX, R8
+	; B56:       488BE5           MOV RSP, RBP
+	; B59:       F8               CLC
+	; B5A:       5D               POP RBP
+	; B5B:       C3               RET
+
+Down to 203 bytes!
+
+	; disassembly for CANVAS-PAINT-RGBA255
+	; Size: 203 bytes. Origin: #x53483075                         ; CANVAS-PAINT-RGBA255
+	; 075:       4C894DC0         MOV [RBP-64], R9
+	; 079:       4883EC10         SUB RSP, 16
+	; 07D:       498BD1           MOV RDX, R9
+	; 080:       B902000000       MOV ECX, 2
+	; 085:       48892C24         MOV [RSP], RBP
+	; 089:       488BEC           MOV RBP, RSP
+	; 08C:       E8B1FD14FD       CALL #x505D2E42                 ; #<FDEFN %CANVAS-VECTOR>
+	; 091:       480F42E3         CMOVB RSP, RBX
+	; 095:       4C8B4DC0         MOV R9, [RBP-64]
+	; 099:       4C8BE2           MOV R12, RDX
+	; 09C:       4C8965C8         MOV [RBP-56], R12
+	; 0A0:       4883EC10         SUB RSP, 16
+	; 0A4:       498BD1           MOV RDX, R9
+	; 0A7:       B902000000       MOV ECX, 2
+	; 0AC:       48892C24         MOV [RSP], RBP
+	; 0B0:       488BEC           MOV RBP, RSP
+	; 0B3:       E80AFD14FD       CALL #x505D2DC2                 ; #<FDEFN CANVAS-WIDTH>
+	; 0B8:       480F42E3         CMOVB RSP, RBX
+	; 0BC:       4C8B65C8         MOV R12, [RBP-56]
+	; 0C0:       4C8B55F8         MOV R10, [RBP-8]
+	; 0C4:       49C1E202         SHL R10, 2
+	; 0C8:       488B75F0         MOV RSI, [RBP-16]
+	; 0CC:       48D1FE           SAR RSI, 1
+	; 0CF:       480FAFF2         IMUL RSI, RDX
+	; 0D3:       48C1E602         SHL RSI, 2
+	; 0D7:       49D1FA           SAR R10, 1
+	; 0DA:       48D1FE           SAR RSI, 1
+	; 0DD:       4901F2           ADD R10, RSI
+	; 0E0:       498BFA           MOV RDI, R10
+	; 0E3:       488B5DD8         MOV RBX, [RBP-40]
+	; 0E7:       48D1FB           SAR RBX, 1
+	; 0EA:       41885C3C01       MOV [R12+RDI+1], BL
+	; 0EF:       4B8D3C12         LEA RDI, [R10+R10]
+	; 0F3:       4883C702         ADD RDI, 2
+	; 0F7:       48D1FF           SAR RDI, 1
+	; 0FA:       488B4DE0         MOV RCX, [RBP-32]
+	; 0FE:       48D1F9           SAR RCX, 1
+	; 101:       41884C3C01       MOV [R12+RDI+1], CL
+	; 106:       4B8D3C12         LEA RDI, [R10+R10]
+	; 10A:       4883C704         ADD RDI, 4
+	; 10E:       48D1FF           SAR RDI, 1
+	; 111:       488B45E8         MOV RAX, [RBP-24]
+	; 115:       48D1F8           SAR RAX, 1
+	; 118:       4188443C01       MOV [R12+RDI+1], AL
+	; 11D:       4B8D3C12         LEA RDI, [R10+R10]
+	; 121:       4883C706         ADD RDI, 6
+	; 125:       48D1FF           SAR RDI, 1
+	; 128:       4C8B45D0         MOV R8, [RBP-48]
+	; 12C:       49D1F8           SAR R8, 1
+	; 12F:       4588443C01       MOV [R12+RDI+1], R8B
+	; 134:       49D1E0           SHL R8, 1
+	; 137:       498BD0           MOV RDX, R8
+	; 13A:       488BE5           MOV RSP, RBP
+	; 13D:       F8               CLC
+	; 13E:       5D               POP RBP
+	; 13F:       C3               RET
+
+...but the resulting code is no faster. At least, not significantly. Not within the error bounds of the timing.
+
+I also tried wrapping the loop itself in a function, setting optimisation to the max, and it seems to inline the PAINT function... but still isn't noticeably faster!
+
+	(defun frab (canvas)
+			  (declare (optimize (speed 3) (safety 0) (debug 0)))
+			  (dotimes (i 400)
+				(dotimes (j 400)
+				  (canvas-paint-rgba255 canvas i j 1 2 3 4))))
+	WARNING: redefining SKETCH::FRAB in DEFUN
+	FRAB
+	SKETCH> (disassemble 'frab)
+	; disassembly for FRAB
+	; Size: 287 bytes. Origin: #x5346662E                         ; FRAB
+	; 62E:       4531C0           XOR R8D, R8D
+	; 631:       E9FF000000       JMP L3
+	; 636:       660F1F840000000000 NOP
+	; 63F:       90               NOP
+	; 640: L0:   31FF             XOR EDI, EDI
+	; 642:       E9DA000000       JMP L2
+	; 647:       660F1F840000000000 NOP
+	; 650: L1:   488B45F8         MOV RAX, [RBP-8]
+	; 654:       4C8945E8         MOV [RBP-24], R8
+	; 658:       48897DE0         MOV [RBP-32], RDI
+	; 65C:       488945D8         MOV [RBP-40], RAX
+	; 660:       4883EC10         SUB RSP, 16
+	; 664:       488BD0           MOV RDX, RAX
+	; 667:       B902000000       MOV ECX, 2
+	; 66C:       48892C24         MOV [RSP], RBP
+	; 670:       488BEC           MOV RBP, RSP
+	; 673:       B8422E5D50       MOV EAX, #x505D2E42             ; #<FDEFN %CANVAS-VECTOR>
+	; 678:       FFD0             CALL RAX
+	; 67A:       480F42E3         CMOVB RSP, RBX
+	; 67E:       488B45D8         MOV RAX, [RBP-40]
+	; 682:       488BF2           MOV RSI, RDX
+	; 685:       488975F0         MOV [RBP-16], RSI
+	; 689:       4883EC10         SUB RSP, 16
+	; 68D:       488BD0           MOV RDX, RAX
+	; 690:       B902000000       MOV ECX, 2
+	; 695:       48892C24         MOV [RSP], RBP
+	; 699:       488BEC           MOV RBP, RSP
+	; 69C:       B8C22D5D50       MOV EAX, #x505D2DC2             ; #<FDEFN CANVAS-WIDTH>
+	; 6A1:       FFD0             CALL RAX
+	; 6A3:       480F42E3         CMOVB RSP, RBX
+	; 6A7:       488B7DE0         MOV RDI, [RBP-32]
+	; 6AB:       4C8B45E8         MOV R8, [RBP-24]
+	; 6AF:       488B75F0         MOV RSI, [RBP-16]
+	; 6B3:       4A8D1C8500000000 LEA RBX, [R8*4]
+	; 6BB:       488BC7           MOV RAX, RDI
+	; 6BE:       48D1F8           SAR RAX, 1
+	; 6C1:       480FAFC2         IMUL RAX, RDX
+	; 6C5:       48C1E002         SHL RAX, 2
+	; 6C9:       48D1FB           SAR RBX, 1
+	; 6CC:       48D1F8           SAR RAX, 1
+	; 6CF:       4801C3           ADD RBX, RAX
+	; 6D2:       488BCB           MOV RCX, RBX
+	; 6D5:       B803000000       MOV EAX, 3
+	; 6DA:       88440E01         MOV [RSI+RCX+1], AL
+	; 6DE:       488D0C1B         LEA RCX, [RBX+RBX]
+	; 6E2:       4883C102         ADD RCX, 2
+	; 6E6:       48D1F9           SAR RCX, 1
+	; 6E9:       B802000000       MOV EAX, 2
+	; 6EE:       88440E01         MOV [RSI+RCX+1], AL
+	; 6F2:       488D0C1B         LEA RCX, [RBX+RBX]
+	; 6F6:       4883C104         ADD RCX, 4
+	; 6FA:       48D1F9           SAR RCX, 1
+	; 6FD:       B801000000       MOV EAX, 1
+	; 702:       88440E01         MOV [RSI+RCX+1], AL
+	; 706:       488D0C1B         LEA RCX, [RBX+RBX]
+	; 70A:       4883C106         ADD RCX, 6
+	; 70E:       48D1F9           SAR RCX, 1
+	; 711:       B804000000       MOV EAX, 4
+	; 716:       88440E01         MOV [RSI+RCX+1], AL
+	; 71A:       488D4702         LEA RAX, [RDI+2]
+	; 71E:       488BF8           MOV RDI, RAX
+	; 721: L2:   4881FF20030000   CMP RDI, 800
+	; 728:       0F8C22FFFFFF     JL L1
+	; 72E:       498D4002         LEA RAX, [R8+2]
+	; 732:       4C8BC0           MOV R8, RAX
+	; 735: L3:   4981F820030000   CMP R8, 800
+	; 73C:       0F8CFEFEFFFF     JL L0
+	; 742:       BA17001050       MOV EDX, #x50100017             ; NIL
+	; 747:       488BE5           MOV RSP, RBP
+	; 74A:       F8               CLC
+	; 74B:       5D               POP RBP
+	; 74C:       C3               RET
+
+	(let ((canvas (make-canvas 400 400)))
+			  (time
+			   (frab canvas)))
+	Evaluation took:
+	  0.008 seconds of real time
+	  0.007722 seconds of total run time (0.007722 user, 0.000000 system)
+	  100.00% CPU
+	  17,678,004 processor cycles
+	  0 bytes consed
+  
+=== Next steps
+1. Somehow recreate the baseline performance inside a function, then peek at the assembly and try to figure out
+   what's different. Oh, I'm stupid: I was including the array creation in the timing at some point.
+2. Actually comb through the code to understand it. I think it's still getting the canvas & width every time. Perhaps an interface could be provided to factor that out, and also to avoid recomputing the pos every time.
+   (with-canvas-write (canvas i j)
+     (paint 0 1 2 3))
+   ...somehow compiles to...
+   (with-slots (%vector width height) canvas
+      (loop with pos = 0
+            for i = 0 below height
+            do (loop for j = 0 below width
+                     do (progn
+                          (setf (aref %vector pos) 0)
+                          (setf (aref %vector (+ pos 1)) 1)
+                          (setf (aref %vector (+ pos 2)) 2)
+                          (setf (aref %vector (+ pos 3)) 3)
+                          (incf pos 4)))))
+    Avoids the repetitive shit like calling functions and computing the pos.
+3. Accept that it's fast enough. At 0.008 seconds, it can do ~125 frames per minute. I ran this sketch and it seems to be blazing fast, though not sure if it's reaching the standard 60fps.
+
+    (defsketch foo
+            ((canvas (make-canvas width height)))
+          (dotimes (i width)
+            (dotimes (j height)
+              (canvas-paint-rgba255 canvas i j (random 255) 0 0 255)))
+          (draw canvas))
+4. Look into minimum theoretical time on my machine, i.e. 3 additions, 4 sets, 1 inc for each iteration (not counting the index vars over the width & height). Times 400x400x4. If each of those operations takes 1ns...
+	  (* 400 400 4 (+ 3 4 1) 1e-9)
+	  = 0.00512 seconds
+	...which, funnily, is around the time we're getting! My processor is ~2GHz, which is 2e9 cycles per
+    second, so actually it's about 0.5ns per cycle (if I'm right), and...
+      (* 400 400 4 (+ 3 4 1) .5e-9)
+      = 0.00256 seconds
+	More hardware-agnostic, maybe, is the number of cycles.
+    It took 17,678,004 cycles in one of the test runs.
+    That's about  (float (/ 17678004 (* 400 400))) = ~110 cycles per pixel.
+    Hmm, seems like a lot.
+    Let's say each of those instructions takes 1 cycle, then it should be 8 cycles per pixel!
+    Remember we're doing...
+       - 2 function calls to get the vec and width.
+       - 3 multiplications and 1 addition to get the offset.
+       - 4 sets and 3 additions inside the loop
+    Already a lot more!
+    But knowing that we're not TOO far from the theoretical minimum gives me hope, i.e. we're getting
+    a time of ~0.008 seconds, compared to 0.00256 seconds.
+    And so, I think I'm happy to leave it here.

@@ -22,4 +22,4 @@
           ((< n 67) (values 20 200 20))
           ((< n 75) (values 120 120 120))
           (t (values 255 255 255)))
-      (canvas-paint-rgba255 canvas r g b 255 i j))))
+      (canvas-paint-rgba255 canvas i j r g b 255))))

@@ -43,9 +43,10 @@
    :v-copy
    :v=
    :v+
-   :v-
-   :v*
-   :v/
+   :v+!
+   :v-!
+   :v*!
+   :v/!
    :v-scale
    :v-scale!
    :v-length
@@ -63,6 +64,7 @@
    :perpendicular-anticlockwise
    :v->polar!
    :v->polar
+   :polar-vec
 
    :get-palette
    :next-colour

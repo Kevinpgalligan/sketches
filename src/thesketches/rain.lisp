@@ -83,7 +83,7 @@
   (dotimes (i (/ height fog-tile-interval))
     (dotimes (j (/ width fog-tile-interval))
       (let ((fog (noise (* fog-noise-scale i) (* fog-noise-scale j) t0)))
-        (canvas-paint-gray255 canvas (truncate (* max-fog fog 255)) j i))))
+        (canvas-paint-gray255 canvas j i (truncate (* max-fog fog 255))))))
   (canvas-lock canvas)
   (draw canvas :width width :height height)
   (canvas-unlock canvas)

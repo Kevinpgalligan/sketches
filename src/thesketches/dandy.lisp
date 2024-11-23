@@ -13,9 +13,19 @@
      (gpen (make-pen :stroke +green+ :weight 2))
      (rpen (make-pen :stroke +red+))
      (yellowy-r 5)
+     (canvas (make-canvas width height))
+     (spinner-pos (vec2 (- (random width) max-dist)
+                        (- (random height)  max-dist)))
+     (spinner-angle 0)
+     (spinner-radius 30)
      (dt 0))
   (background +white+)
   (translate max-dist max-dist)
+  (with-drawing-to-canvas (canvas)
+    (draw-arc spinner-pos
+              (polar-vec spinner-angle spinner-radius)
+              (/ pi 8)))
+  (draw canvas)
   (dotimes (i n)
     (let* ((angle (* (/ i n) 2 pi))
            (end-x (* h (cos angle)))
@@ -62,6 +72,8 @@
                        (circle (vx yellow-center)
                                (vy yellow-center)
                                yellowy-r))))))))
+  (incf spinner-angle 0.1)
+  (decf spinner-radius 0.01)
   (incf dt 0.005))
 
 ;; Copying this over from reuleaux.lisp, need to extract it elsewhere.

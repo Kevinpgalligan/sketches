@@ -39,3 +39,5 @@ In case this list is incomplete, you can run `(print-all-sketches)` to show all 
 * `lsystems.sierspinski`: the Sierspinski triangle.
 * `terrain`: using noise to generate islands and mountains.
 * `nested-squares`: squares inside squares.
+* `dandy`: a medusa-like flower thing.
+* `boids`: an implementation of the [boids algorithm](https://en.wikipedia.org/wiki/Boids) for simulating flocking behaviour.
