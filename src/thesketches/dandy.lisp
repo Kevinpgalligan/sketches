@@ -1,3 +1,5 @@
+;; Based on a drawing by my cousin Andrew.
+
 (sketches:def-sketch-package dandy)
 (in-package kg.sketch.dandy)
 
@@ -10,22 +12,39 @@
      (num-petals 3)
      (max-petal-dist 70)
      (ypen (make-pen :fill +yellow+))
-     (gpen (make-pen :stroke +green+ :weight 2))
-     (rpen (make-pen :stroke +red+))
+     (gpen (make-pen :stroke +green+ :weight 4))
+     (rpen (make-pen :stroke +red+ :weight 2))
      (yellowy-r 5)
      (canvas (make-canvas width height))
-     (spinner-pos (vec2 (- (random width) max-dist)
-                        (- (random height)  max-dist)))
-     (spinner-angle 0)
+     (spinner-center
+      (vec2 (* .8 (- (random width) max-dist))
+            (* .8 (- (random height) max-dist))))
+     (spinner-offset 10)
      (spinner-radius 30)
-     (dt 0))
+     (spinner-angle 0)
+     (spinner-angle-change (* 0.001 2 pi))
+     (pen-angle 0)
+     (spin-speed (* 0.015 2 pi))
+     (radius-reduction 0.02)
+     (t0 0)
+     (dt 0.01))
   (background +white+)
   (translate max-dist max-dist)
-  (with-drawing-to-canvas (canvas)
-    (draw-arc spinner-pos
-              (polar-vec spinner-angle spinner-radius)
-              (/ pi 8)))
-  (draw canvas)
+
+  (let* ((spinner-pos
+           (v+ spinner-center
+               (vec2 (* spinner-offset (cos spinner-angle))
+                     (* spinner-offset (sin spinner-angle)))))
+         (pen-pos
+           (v+ spinner-pos
+               (vec2 (* spinner-radius (cos pen-angle))
+                     (* spinner-radius (sin pen-angle))))))
+    (with-drawing-to-canvas (canvas)
+      (with-pen (:stroke +black+)
+        (draw-arc spinner-pos pen-pos spin-speed :anticlockwise nil))))
+  ;; Draw from top-left corner, accounting for translation.
+  (draw canvas :x (- max-dist) :y (- max-dist))
+
   (dotimes (i n)
     (let* ((angle (* (/ i n) 2 pi))
            (end-x (* h (cos angle)))
@@ -40,7 +59,7 @@
                              for pt = (v-scale (/ (1+ j) num-pts) dir)
                              collect (v+ (v-rescale!
                                           (* 100
-                                             (- (noise (* 0.02 (v-length pt)) dt)
+                                             (- (noise (* 0.02 (v-length pt)) t0)
                                                 0.5))
                                           (perpendicular-anticlockwise dir))
                                          pt)))))
@@ -72,9 +91,11 @@
                        (circle (vx yellow-center)
                                (vy yellow-center)
                                yellowy-r))))))))
-  (incf spinner-angle 0.1)
-  (decf spinner-radius 0.01)
-  (incf dt 0.005))
+
+  (incf spinner-angle spinner-angle-change)
+  (incf pen-angle spin-speed)
+  (decf spinner-radius radius-reduction)
+  (incf t0 dt))
 
 ;; Copying this over from reuleaux.lisp, need to extract it elsewhere.
 ;; (Except here, rather than giving the two endpoints of the arc, we accept
