@@ -1,4 +1,4 @@
-;;;; Based on: http://www.kfish.org/boids/pseudocode.html
+;;;; Based on: https://vergenet.net/~conrad/boids/pseudocode.html
 
 (sketches:def-sketch-package boids)
 (in-package kg.sketch.boids)
@@ -16,12 +16,13 @@
     ((width 400)
      (height 400)
      (restart-on-change nil)
+     (mouse-pos (vec2 200 200))
      (boids (loop repeat 20
                   collect (make-boid (random width) (random height)))
             :tweakable t))
-  (background +white+)
+  (background (gray-255 230))
   (draw-boids boids)
-  (update-positions boids))
+  (update-positions boids mouse-pos))
 
 (defun draw-boids (boids)
   (let ((boid-width 10)
@@ -45,7 +46,7 @@
                             (vx p2) (vy p2)
                             (vx p3) (vy p3))))))))
 
-(defun update-positions (boids)
+(defun update-positions (boids mouse-pos)
   (let ((max-velocity 10))
     (map nil
          (lambda (boid)
@@ -57,8 +58,10 @@
                             (v+ (velocity boid)
                                 (rule1 boid boids)
                                 (rule2 boid boids)
-                                (rule3 boid boids)))))))
+                                (rule3 boid boids)
+                                (v-rescale 0.1 (v- mouse-pos (pos boid)))))))))
 
+;; Fly towards average position of other boids.
 (defun rule1 (boid boids)
   (let ((center (vec2 0 0)))
     (map nil
@@ -68,9 +71,10 @@
          boids)
     (v-scale! (/ (1- (length boids))) center)
     (v-! center (pos boid))
-    (v-scale! (/ 100) center)
+    (v-scale! (/ 200) center)
     center))
 
+;; Stay away from other boids.
 (defun rule2 (boid boids)
   (let ((v-sum (vec2 0 0)))
    (loop for boid2 in boids
@@ -80,6 +84,7 @@
            do (v+! v-sum offset))
    v-sum))
 
+;; Match velocity with other boids.
 (defun rule3 (boid boids)
   (let ((result (vec2 0 0)))
     (map nil
@@ -91,3 +96,6 @@
     (v-! result (velocity boid))
     (v-scale! (/ 8) result)
     result))
+
+(defmethod on-hover ((instance boids) x y)
+  (setf (boids-mouse-pos instance) (vec2 x y)))

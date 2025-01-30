@@ -1,5 +1,5 @@
+- Lava lamp / marching squares: https://www.youtube.com/shorts/RAAs6hURSrs?app=desktop
 - Halt & Catch Fire-esque image leaking
-  (probably needs: initialise from an image, get current colour at coordinate).
 - ;; Useful utils...
   (do-along-path (:parametric z
 				  :old-x old-x
@@ -18,8 +18,9 @@
   (points-generator (lambda (z) (* z (cos z))) (lambda (z) (* z (sin z))))
 - Hakka-inspired collage-style rendering of a picture; edge detction on image to make shape, voronoi to divide shape into triangles (?), group triangles randomly, fill in each group with a random cropped part of an image.
 - 3D rendering.
-- Coloured squares, squares within squares
-- Soft body physics: https://www.youtube.com/watch?app=desktop&v=IxdGyqhppis&pp=ygUMY29kaW5nIHRyYWlu
+- Soft body physics:
+  https://www.youtube.com/watch?app=desktop&v=IxdGyqhppis&pp=ygUMY29kaW5nIHRyYWlu
+  https://thecodingtrain.com/challenges/20-3d-cloth-simulation
 - Map of underground
 - Splines (she also did one on Bezier curves): https://www.reddit.com/r/gamedev/comments/zp3x9r/freya_holm%C3%A9r_the_continuity_of_splines/
 - Deep dive on Bezier curves: https://pomax.github.io/bezierinfo/
@@ -46,3 +47,4 @@
    https://sighack.com/
    https://tylerxhobbs.com/essays
    https://www.bit-101.com/blog/
+* Draw pics with pen plotter: https://www.csun.io/2021/12/29/plotting-old-pictures.html
