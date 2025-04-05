@@ -37,6 +37,7 @@
                 "#272E4B" "#D45727" "#D95179"
                 "#DCD5E7" "#F6C660" "#E79621"
                 "#3F5DA3" "#8973B4" "#1A1D3C")))
+     (txt (load-static-resource "let-go.png"))
      (n-colours (length ball-colours))
      (ballz (loop repeat 1000
                   collect (make-ball
@@ -46,10 +47,8 @@
      (y-axis :up)
      (t0 0))
   (draw bg)
-  (with-font (make-font :color +white+ :size 40)
-    (text "NADA SURF" 150 320))
+  (draw txt :x 165 :y 320)
   (loop for ball in ballz
-        for i from 0
         do (progn
              (let ((offset-y
                      (+ (base-y ball)
@@ -58,8 +57,8 @@
                         ;; space beneath the balls. The ones near the bottom won't
                         ;; be offset very much.
                         (* (exp (* 0.12 (- (base-y ball) ball-max-y)))
-                           300
-                           (noisy:noise (* 0.012 (x ball)) t0)))))
+                           150
+                           (noisy:noise (* 0.01 (x ball)) t0)))))
                ;; State update.
                (incf (y ball) (vel ball))
                (incf (vel ball) (accel ball))
@@ -69,15 +68,22 @@
                      (decf (ticks ball))
                      (setf (accel ball) *gravity*))
                    (when (= 0 (random 700))
-                     (setf (ticks ball) 60)
-                     (setf (accel ball) 0.5)))
+                     (setf (ticks ball) 200)
+                     (setf (accel ball) 3.)))
+               ;; Don't let ball fall below its position in the "wave".
+               ;; This is its base position + the noise.
                (when (< (y ball) offset-y)
                  (setf (y ball) offset-y
                        (vel ball) 0
                        (accel ball) 0))
+               (when (and (> (y ball) offset-y)
+                          (= (vel ball) 0)
+                          (= (accel ball) 0))
+                 (setf (y ball) offset-y))
+               ;; Draw it.
                (with-pen (:fill (colour ball))
                  (circle (x ball) (y ball) radius)))))
-  (incf t0 0.003))
+  (incf t0 0.005))
 
 (defun make-bg (width height)
   (let ((bg-colour (rgb-255 85 114 148))
@@ -94,4 +100,5 @@
                         (color-filter-hsb bg-colour :brightness b)
                         i
                         j))))
+    (canvas-lock cvs)
     cvs))
