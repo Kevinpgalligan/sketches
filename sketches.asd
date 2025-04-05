@@ -47,4 +47,5 @@
                  (:file "nested-squares")
                  (:file "dandy")
                  (:file "boids")
+                 (:file "nadasurf")
                  ))))

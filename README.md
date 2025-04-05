@@ -41,3 +41,4 @@ In case this list is incomplete, you can run `(print-all-sketches)` to show all 
 * `nested-squares`: squares inside squares.
 * `dandy`: a medusa-like flower thing.
 * `boids`: an implementation of the [boids algorithm](https://en.wikipedia.org/wiki/Boids) for simulating flocking behaviour.
+* `nadasurf`: an animated version of the album cover from Nada Surf's *Let Go*.
