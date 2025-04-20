@@ -48,4 +48,5 @@
                  (:file "dandy")
                  (:file "boids")
                  (:file "nadasurf")
+                 (:file "barricelli")
                  ))))

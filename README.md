@@ -42,3 +42,4 @@ In case this list is incomplete, you can run `(print-all-sketches)` to show all 
 * `dandy`: a medusa-like flower thing.
 * `boids`: an implementation of the [boids algorithm](https://en.wikipedia.org/wiki/Boids) for simulating flocking behaviour.
 * `nadasurf`: an animated version of the album cover from Nada Surf's *Let Go*.
+* `barricelli`: a simple version of Barricelli's cellular automata, as described in [this blog post](https://akkartik.name/post/2024-08-30-devlog).

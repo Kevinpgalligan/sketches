@@ -67,11 +67,15 @@
    :v->polar
    :polar-vec
 
+   :palette-name
+   :palette-colours
+   :make-palette
    :get-palette
    :next-colour
    :reset-palette
    :shuffle-palette
    :palette-num-colours
+   :random-palette
 
    :def-lsystem
    :evaluate-lsystem
