@@ -85,7 +85,6 @@
               (old-p2 toast) (add-bounce old-p2 p2 width height))))))
 
 (defun add-bounce (old-p p width height)
-  (return-from add-bounce old-p) ; DEBUG
   (vec2
    (mirror-if-at-bound (vx old-p) (vx p) width)
    (mirror-if-at-bound (vy old-p) (vy p) height)))
@@ -93,7 +92,7 @@
 (defun mirror-if-at-bound (old-x x bound)
   (cond
     ((= x 0) (- old-x))
-    ((= x bound) (+ bound (- bound old-x)))
+    ((= x bound) (- bound old-x))
     (t old-x)))
 
 (defun vec-down-p (v)

@@ -2,7 +2,8 @@
 ;;;;    https://akkartik.name/post/2024-08-30-devlog
 ;;;; And vaguely following the 1987 paper by Nils Aall Barricelli
 ;;;; linked therein. There's a lot of room to add new rules, like
-;;;; mutation, reproduction, etc.
+;;;; mutation, reproduction, etc. Also, I have in no way debugged this
+;;;; and I'm not entirely sure it's correct, but the images look kinda cool?
 
 ;;;; ==== INSTRUCTIONS
 ;;;; Press <SPACE> to generate a new picture.
@@ -37,11 +38,11 @@
                                     (list))))))))
 (defsketch barricelli
     ((size 400)
-     (n-generations 200)
+     (n-generations 400)
      (mag 1)
      (width (* mag size))
      (height (* mag n-generations))
-     (possible-vals '(0 2 3 5 7)))
+     (possible-vals '(0 2 3 5)))
   (let* ((pal (get-bar-palette (length possible-vals)))
          (cvs (make-canvas size n-generations))
          (n-vals (length possible-vals))
