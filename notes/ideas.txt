@@ -1,3 +1,12 @@
+## Sketch itself
+* Don't keep drawing once an error has been raised.
+* Try to reproduce error when reloading a sketch with `restart-on-change nil`.
+  It appeared for a single frame, but I'm not sure what the error was.
+* Respond to suggestions here: https://github.com/vydd/sketch/pull/168
+  Configurable join angles, and better default.
+* Fix weird double-draw bug when drawing to canvas.
+
+## Sketches
 - Lava lamp / marching squares: https://www.youtube.com/shorts/RAAs6hURSrs?app=desktop
 - Halt & Catch Fire-esque image leaking
 - ;; Useful utils...
