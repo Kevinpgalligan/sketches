@@ -76,6 +76,9 @@
    :shuffle-palette
    :palette-num-colours
    :random-palette
+   :list-palettes
+   :num-colours
+   :nth-colour
 
    :def-lsystem
    :evaluate-lsystem

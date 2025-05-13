@@ -12,21 +12,29 @@
       (apply #'rgb-255 spec)))
 
 (defparameter *raw-palettes*
-  '((:sadiq ("#897C84" "#365E31" "#626A5E" "#AE5F44" "#3BA061" "#579B69"
-             "#CBB058" "#4C7594" "#5FBDCA" "#36B3C9" "#9EADAE" "#D7C9AB"
-             "#FBCCB9" "#F1DDD8"))
+  '((:sadiq ("#897C84" "#365E31" "#626A5E" "#AE5F44" "#3BA061"
+             "#CBB058" "#4C7594" "#5FBDCA" "#36B3C9" "#9EADAE"
+             "#D7C9AB" "#FBCCB9" "#F1DDD8"))
     (:palestine ("#E4312b" "#000000" "#FFFFFF" "#149954"))
     ;; From colorhunt.co! Made up the names myself.
     (:ch-greens ("#123524" "#3E7B27" "#85A947" "#EFE3C2"))
     (:ch-lolipop ("#5CB338" "#ECE852" "#FFC145" "#FB4141"))
     (:ch-suntan ("#FEF3E2" "#FAB12F" "#FA812F" "#FA4032"))
     (:ch-skeleton ("#E4E0E1" "#D6C0B3" "#AB886D" "#493628"))
-    (:ch-pinkice ("#FF8282" "#FF6363" "#BEE4D0" "#DBFFCB"))
+    (:ch-pink-ice ("#FF8282" "#FF6363" "#BEE4D0" "#DBFFCB"))
     (:ch-blues ("#213448" "#547792" "#94B4C1" "#ECEFCA"))
-    (:ch-bloodice ("#D84040" "#A31D1D" "#ECDCBF" "#F8F2DE"))
+    (:ch-blood-ice ("#D84040" "#A31D1D" "#ECDCBF" "#F8F2DE"))
     (:ch-beach ("#FFA725" "#FFF5E4" "#C1D8C3" "#6A9C89"))
-    (:ch-arcticsailor ("#F1EFEC" "#D4C9BE" "#123458" "#030303"))
-    (:ch-bluegreen ("#328E6E" "#67AE6E" "#90C67C" "#E1EEBC"))))
+    (:ch-arctic-sailor ("#F1EFEC" "#D4C9BE" "#123458" "#030303"))
+    (:ch-bluegreen ("#328E6E" "#67AE6E" "#90C67C" "#E1EEBC"))
+    ;; Colourblind-friendly, from:
+    ;;   https://davidmathlogic.com/colorblind/
+    (:ibm ("#648FFF" "#785EF0" "#DC267F" "#FE6100" "#FFB000"))
+    (:wong ("#000000" "#E69F00" "#56B4E9" "#009E73"
+            "#F0E442" "#0072B2" "#D55E00" "#CC79A7"))
+    (:tol ("#332288" "#117733" "#44AA99" "#88CCEE"
+           "#DDCC77" "#CC6677" "#AA4499" "#882255"))
+    ))
 
 (loop for raw-palette in *raw-palettes*
       do (apply #'add-palette raw-palette))
@@ -34,7 +42,7 @@
 (defclass palette ()
   ((name :initarg :name :accessor palette-name)
    (colours :initarg :colours :accessor palette-colours)
-   (num-colours :initarg :num-colours)
+   (num-colours :initarg :num-colours :accessor num-colours)
    (colour-index :initform 0)))
 
 (defun make-palette (name colours)
@@ -59,6 +67,10 @@ the colours have been exhausted."
         (setf colour-index 0))
       c)))
 
+(defun nth-colour (palette n)
+  (with-slots (colours) palette
+    (elt colours n)))
+
 (defun reset-palette (palette)
   "Goes back to the first colour in the palette."
   (setf (slot-value palette 'colour-index) 0))
@@ -74,3 +86,7 @@ the colours have been exhausted."
 
 (defun random-palette ()
   (get-palette (first (alexandria:random-elt *raw-palettes*))))
+
+(defun list-palettes ()
+  (loop for key being the hash-keys of *colours-by-palette*
+        collect key))
