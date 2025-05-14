@@ -1,10 +1,18 @@
 (in-package sketches)
 
-;; A basic implementation of 2d Verlet physics.
+;; A barebones implementation of 2d Verlet physics.
 ;;
 ;; TODO:
-;;    1. fix points.
-;;    2. apply forces to points between physics steps.
+;;    -1. improve interface for accessing particle coordinates.
+;;        (need to access 2 at once for constraints).
+;;        maybe: (with-particle-xy (x1 y1 x2 y2)
+;;                                 (p1-id p2-id)
+;;                                 world
+;;                 [do-stuff])
+;;    0. finish stick & spring constraints.
+;;       maybe "not closer than" and "not further than" constraints, also?
+;;    1. fixing points.
+;;    2. manually apply forces to points.
 ;;    3. reimplement toast sketch.
 ;;    4. (unrelated) fix space invaders sketch, if broken.
 ;;    5. could short-circuit verlet steps based on change in position.
@@ -163,6 +171,16 @@
         for p = (pos particle)
         do (setf (vx p) (max (min-x c) (min (vx p) (max-x c)))
                  (vy p) (max (min-y c) (min (vy p) (max-y c))))))
+
+(defmethod apply-constraint (world (c stick-constraint))
+  (apply-spring-constraint world (p1-id c) (p2-id c) (len c) 1))
+
+(defmethod apply-constraint (world (c spring-constraint))
+  (apply-spring-constraint world (p1-id c) (p2-id c) (len c) (coeff c)))
+
+(defun apply-spring-constraint (world p1-id p2-id len coeff)
+  ;; TODO
+  )
 
 (defun apply-constraints (world)
   (loop repeat (verlet-iterations world)
