@@ -79,6 +79,11 @@
   (sqrt (loop for x across v
               sum (square x))))
 
+(defun euclidean-distance (v1 v2)
+  (sqrt (loop for x across v1
+              for y across v2
+              sum (square (- x y)))))
+
 (defun v-normalise (v)
   (let ((len (v-length v)))
     (if (zerop len)

@@ -1,5 +1,6 @@
 ## Sketch itself
 * Don't keep drawing once an error has been raised.
+* Error messages sometimes printed backwards???
 * Try to reproduce error when reloading a sketch with `restart-on-change nil`.
   It appeared for a single frame, but I'm not sure what the error was.
 * Respond to suggestions here: https://github.com/vydd/sketch/pull/168

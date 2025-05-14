@@ -66,6 +66,7 @@
    :v->polar!
    :v->polar
    :polar-vec
+   :euclidean-distance
 
    :palette-name
    :palette-colours
@@ -82,4 +83,12 @@
 
    :def-lsystem
    :evaluate-lsystem
+
+   :make-world
+   :enable-gravity
+   :disable-gravity
+   :add-particle
+   :with-particle-xy
+   :update-world
+   :add-bounds
    ))
