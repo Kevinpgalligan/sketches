@@ -9,7 +9,7 @@ https://github.com/user-attachments/assets/25d78de7-db0d-4d43-920b-6be973a1091a
 * Follow the normal installation instructions for Sketch (includes an SDL2-specific step).
 * From the REPL, load the system: `(ql:quickload 'sketches)`.
 * Switch to the `sketches` package: `(in-package sketches)`.
-* To run a particular sketch from the list below, like `stars`: `(start-sketch 'stars)`.
+* To run a particular sketch from the list below, like `stars`: `(load-sketch 'stars)`.
 
 ### Sketches
 In case this list is incomplete, you can run `(print-all-sketches)` to show all the available sketches.

@@ -19,6 +19,7 @@
                (:file "resources")
                (:file "lsystem")
                (:file "widgets")
+               (:file "physics")
                (:module "thesketches"
                 :serial t
                 :components
@@ -49,4 +50,5 @@
                  (:file "boids")
                  (:file "nadasurf")
                  (:file "barricelli")
+                 (:file "physics-test")
                  ))))
