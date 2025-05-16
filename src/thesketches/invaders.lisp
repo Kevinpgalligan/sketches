@@ -129,9 +129,9 @@
   (with-slots (player bullets) instance
     (cond
       ((eq key :left)
-       (setf (moving-left player) (eq state :keydown)))
+       (setf (moving-left player) (eq state :down)))
       ((eq key :right)
-       (setf (moving-right player) (eq state :keydown)))
+       (setf (moving-right player) (eq state :down)))
       ((eq key :space)
        (push (make-bullet :x (+ (x player) (/ (width player) 2))
                           :y (- (y player) (height player)))

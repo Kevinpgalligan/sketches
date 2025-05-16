@@ -87,8 +87,14 @@
    :make-world
    :enable-gravity
    :disable-gravity
+   :fix-particle
+   :unfix-particle
    :add-particle
    :with-particle-xy
+   :particle-position
    :update-world
    :add-bounds
+   :add-stick-constraint
+   :add-spring-constraint
+   :apply-force
    ))
