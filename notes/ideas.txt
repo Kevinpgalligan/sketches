@@ -8,6 +8,8 @@
 * Fix weird double-draw bug when drawing to canvas.
 
 ## Sketches
+- Truchet tiles: https://en.m.wikipedia.org/wiki/Truchet_tiles
+- Shipibo art.
 - Lava lamp / marching squares: https://www.youtube.com/shorts/RAAs6hURSrs?app=desktop
 - Halt & Catch Fire-esque image leaking
 - ;; Useful utils...

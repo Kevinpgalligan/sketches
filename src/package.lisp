@@ -33,6 +33,7 @@
    :vec
    :zeros-vec
    :vec2
+   :vec3
    :v-copy
    :vx
    :vy

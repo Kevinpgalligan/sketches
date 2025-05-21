@@ -9,6 +9,9 @@
 (defun vec2 (x y)
   (make-array '(2) :initial-contents (list x y)))
 
+(defun vec3 (x y z)
+  (make-array '(3) :initial-contents (list x y z)))
+
 (defun vx (v) (aref v 0))
 (defun vy (v) (aref v 1))
 (defun vz (v) (aref v 2))
