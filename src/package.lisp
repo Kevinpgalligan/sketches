@@ -34,6 +34,7 @@
    :zeros-vec
    :vec2
    :vec3
+   :vec3f
    :v-copy
    :vx
    :vy
@@ -68,6 +69,11 @@
    :v->polar
    :polar-vec
    :euclidean-distance
+
+   :matrix*
+   :apply-transform
+   :reorient-transform
+   :translation-transform
 
    :palette-name
    :palette-colours

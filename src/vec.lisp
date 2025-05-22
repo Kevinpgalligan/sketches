@@ -12,6 +12,13 @@
 (defun vec3 (x y z)
   (make-array '(3) :initial-contents (list x y z)))
 
+(defun vec3f (x y z)
+  (make-array '(3)
+              :element-type 'single-float
+              :initial-contents (list (float x)
+                                      (float y)
+                                      (float z))))
+
 (defun vx (v) (aref v 0))
 (defun vy (v) (aref v 1))
 (defun vz (v) (aref v 2))

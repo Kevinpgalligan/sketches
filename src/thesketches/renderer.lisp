@@ -3,35 +3,50 @@
 
 ;;;; Triangle renderer and accompanying camera model.
 ;;;; 
-;;;; Mostly based on this, especially the "Virtual Pinhole Camera" chapter.
+;;;; Mostly based on this guide, especially the "Virtual Pinhole Camera" chapter.
 ;;;;   https://www.scratchapixel.com/lessons/3d-basic-rendering/3d-viewing-pinhole-camera/how-pinhole-camera-works-part-1.html
 
 (defclass camera ()
-  ((focal-length
-    :initarg :focal-length
-    :accessor focal-length)
+  ((pos
+    :initarg :pos
+    :initform (vec3f 0 0 0)
+    :accessor pos)
+   (dir
+    :initarg :dir
+    :initform (vec3f 0 0 1)
+    :accessor dir)
+   (focal-length
+       :initarg :focal-length
+       :accessor focal-length)
    (x-bound
     :initarg :x-bound
     :accessor x-bound)
    (y-bound
     :initarg :y-bound
-    :accessor y-bound)))
+    :accessor y-bound)
+   (transform-mat
+    :accessor transform-mat)))
+
+(defmethod initialize-instance ((cam camera) &key &allow-other-keys)
+  (setf (transform-mat cam)
+        (matrix*
+         ;; TODO: 1) translation transform, 2) rotation.
+         )))
 
 (defsketch raster
     ((width 400)
      (height 400)
      (vertices
-      (list (vec3 -4 2 2)
-            (vec3 0 5 2)
-            (vec3 2 -5 2)))
+      (list (vec3f -4 2 2)
+            (vec3f 0 5 2)
+            (vec3f 2 -5 2)))
      (cam (make-instance 'camera
                          :focal-length 1
                          :x-bound 10
                          :y-bound 10))
      (y-axis :up))
   ;; TODO:
-  ;; 0. Camera position and direction.
-  ;;    (sb-cga to to transformations?)
+  ;; 0. Camera position and direction, transform points.
   ;; 1. Frustum culling, z ordering of triangles, and also filter
   ;;    triangles facing the wrong way.
   ;; 2. Load model (bunch of triangles & their normals).
