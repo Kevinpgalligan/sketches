@@ -1,10 +1,12 @@
 ## Sketch itself
 * Don't keep drawing once an error has been raised.
-* Error messages sometimes printed backwards???
-* Try to reproduce error when reloading a sketch with `restart-on-change nil`.
-  It appeared for a single frame, but I'm not sure what the error was.
 * Respond to suggestions here: https://github.com/vydd/sketch/pull/168
   Configurable join angles, and better default.
+* Make position refer to top-left corner when y-axis points up?
+  Con: someone draws at position (0,0), they might be surprised when
+       nothing shows up. So, see how other graphics libs handle this.
+  Is a workaround for the error thing to change the text alignment when y-axis points up?
+* Try to reproduce error when reloading a sketch with `restart-on-change nil`.
 * Fix weird double-draw bug when drawing to canvas.
 
 ## Sketches
