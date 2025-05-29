@@ -1,0 +1,42 @@
+## Current behaviour
+* with-error-handling wraps all the drawing code in render
+* this defines "with-stage" macro that sets a 'stage' variable.
+* INSIDE with-error-handling...
+* handler-bind catches errors.
+  in its error-handling, it calls on-error-handler.
+  IF a click has happened... the error is re-signalled and rises to
+  the debugger.
+  OTHERWISE, it jumps to the ":error" in the tagbody, which draws the red
+  screen and sets (env-red-screen ...) to t. 
+* if no error happens inside handler-bind...
+  execution jumps to the :end tag.
+* at the :end tag, the env-debug-key-pressed is set to nil.
+
+In render...
+* If env-red-screen is true, it calls the setup function!
+  Assuming the same error is thrown on each frame, setup gets
+  called every frame!
+
+## Proposal
+The flow:
+* error is signalled
+* handler-bind in render (or wherever) draws red screen, allows
+  error to bubble up.
+* error isn't caught elsewhere.
+  So the original `error` call invokes the debugger.
+* Restarts:
+    reset-sketch (sets %setup-called to nil, maybe draws over background?
+                  what if copy-pixels is t?
+				  I think this would essentially be the same as
+				  the sdl `continue` restart, besides triggering
+				  setup being called again. currently, we seem to
+				  reset the sketch by default (double-check)).
+    continue (sdl)
+    abort (sdl)
+    abort (sbcl)
+
+## More thoughts
+* Consider what happens when each of these restarts is selected.
+* Don't forget that behaviour may be different depending on copy-pixels.
+* Suggestion: for copy-pixels, could save the canvas behind the error
+  screen and redraw it if the reset-sketch restart isn't used.

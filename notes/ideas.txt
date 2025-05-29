@@ -10,8 +10,11 @@
 * Fix weird double-draw bug when drawing to canvas.
 
 ## Sketches
+- 3D rendering.
 - Truchet tiles: https://en.m.wikipedia.org/wiki/Truchet_tiles
 - Shipibo art.
+- Hakka-inspired collage-style rendering of a picture; edge detction on image to make shape, voronoi to divide shape into triangles (?), group triangles randomly, fill in each group with a random cropped part of an image.
+- Map of underground
 - Lava lamp / marching squares: https://www.youtube.com/shorts/RAAs6hURSrs?app=desktop
 - Halt & Catch Fire-esque image leaking
 - ;; Useful utils...
@@ -30,12 +33,6 @@
   ;; Combine this with other tools... something that takes pairs of points
   ;; and extrudes to generate vertices?
   (points-generator (lambda (z) (* z (cos z))) (lambda (z) (* z (sin z))))
-- Hakka-inspired collage-style rendering of a picture; edge detction on image to make shape, voronoi to divide shape into triangles (?), group triangles randomly, fill in each group with a random cropped part of an image.
-- 3D rendering.
-- Soft body physics:
-  https://www.youtube.com/watch?app=desktop&v=IxdGyqhppis&pp=ygUMY29kaW5nIHRyYWlu
-  https://thecodingtrain.com/challenges/20-3d-cloth-simulation
-- Map of underground
 - Splines (she also did one on Bezier curves): https://www.reddit.com/r/gamedev/comments/zp3x9r/freya_holm%C3%A9r_the_continuity_of_splines/
 - Deep dive on Bezier curves: https://pomax.github.io/bezierinfo/
 - Tiling.
