@@ -51,4 +51,5 @@
                  (:file "nadasurf")
                  (:file "barricelli")
                  (:file "physics-test")
+                 (:file "keffiyeh")
                  ))))

@@ -40,3 +40,37 @@ The flow:
 * Don't forget that behaviour may be different depending on copy-pixels.
 * Suggestion: for copy-pixels, could save the canvas behind the error
   screen and redraw it if the reset-sketch restart isn't used.
+
+## Understanding the copy-pixels case
+Normal flow:
+0. (Whatever shit sdl2kit does)
+1. We bind our FBO as the framebuffer.
+2. Drawing.
+3. copy-pixels cleanup.
+   Set framebuffer to 0 (no target).
+   Clear the color buffer of the window.
+   BLIT. (Copy our FBO to the window's drawing target?).
+4. sdl2kit swaps the double buffers. I think the buffer we were
+   drawing to... now becomes the visible buffer.
+
+1. We bind our FBO as the framebuffer.
+2. Drawing... ERROR.
+3. display-error called, overwrites color buffer with red.
+   (I think that applies directly to SDL2's buffer?)
+   Draws text, which goes... where? Maybe the glClear implicitly
+   changes the drawing target?
+4. We explicitly swap the SDL2 double buffers.
+   So, now: (a) the visible buffer shows the error message.
+            (b) the drawing buffer preserves our sketch.
+            (c) that doesn't actually matter, 'cause we'll write
+                over it with our FBO.
+
+Remaining questions:
+  (1) How does the friggin' text get rendered to the screen? Should be
+      drawn to our FBO!
+      Answer: TODO
+  (2) Why do all the circles disappear, if our FBO is indeed preserved?!?
+      Answer: on redefining the sketch, it sets `sketch-%setup-called` to nil.
+      SO, we end up drawing a yellow background over everything!
+
+With `(restart-on-change nil)`, the red screen does persist when we continue the sketch. Should probably do `(gl:bind-framebuffer :framebuffer 0)` before displaying the error.

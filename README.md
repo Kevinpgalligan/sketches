@@ -44,3 +44,4 @@ In case this list is incomplete, you can run `(print-all-sketches)` to show all 
 * `nadasurf`: an animated version of the album cover from Nada Surf's *Let Go*.
 * `barricelli`: a simple version of Barricelli's cellular automata, as described in [this blog post](https://akkartik.name/post/2024-08-30-devlog).
 * `physics-test`: testing my implementation of Verlet physics. Particles, gravity, bounds, springs, sticks.
+* `keffiyeh`: randomly generated patterns in the style of the Palestinian keffiyeh.

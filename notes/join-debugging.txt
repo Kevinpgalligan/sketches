@@ -1,0 +1,43 @@
+### Test sketch
+(defsketch polyline-test ((deg 3))
+  (translate (floor width 2) (floor height 2))
+  (let ((coords (list -100d0 0d0 0d0 0d0 (* 150d0 (cos deg)) (* 150d0 (sin deg)))))
+    (with-pen (:stroke +white+ :weight 20 :line-join :bevel)
+      (apply #'polyline coords)))
+  (incf deg 0.01))
+
+### Interactive debugging sketch
+;; Same, but with more debug stuff drawn and spacebar to move
+
+(defsketch polyline-test ((deg 3))
+          (translate (floor width 2) (floor height 2))
+          (let ((coords (list -100d0 0d0 0d0 0d0 (* 150d0 (cos deg)) (* 150d0 (sin deg)))))
+            (with-pen (:stroke +white+ :weight 20 :line-join :bevel)
+              (apply #'polyline coords))
+            (let* ((lines (edges (group coords) nil))
+                   (strips (join-lines lines 10 -10)))
+              (loop for strip in strips
+                    do (progn
+                         (with-pen (:stroke +blue+ :weight 1)
+                           (loop for pt in (left-vertices strip)
+                                 for i from 0
+                                 do (circle (point-x pt) (point-y pt) 3)
+                                 do (with-font (make-font :color +blue+)
+                                      (text (format nil "~a" i)
+                                            (- (point-x pt) 10)
+                                            (point-y pt)))))
+                         (with-pen (:stroke +red+ :weight 1)
+                           (loop for pt in (right-vertices strip)
+                                 for i from 0
+                                 do (circle (point-x pt) (point-y pt) 3)
+                                 do (with-font (make-font :color +red+)
+                                      (text (format nil "~a" i)
+                                            (point-x pt)
+                                            (- (point-y pt) 10)))))
+                         ))))
+          (incf deg 0.025)
+          (stop-loop))
+
+(defmethod on-key ((inst polyline-test) key state)
+    (when (and (eq key :space) (eq state :up))
+      (start-loop)))
