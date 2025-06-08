@@ -5,8 +5,6 @@
     ((height 600))
   (background +white+)
   (let ((black-pen (make-pen :fill +black+ :stroke +black+))
-        ;; Others:
-        ;;   curly bracket thing
         (types '(:line :waves :mottled :leaves :grid :curly-bracks))
         (special-types '(:leaves :grid :curly-bracks))
         last-type)

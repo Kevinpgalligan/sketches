@@ -6,18 +6,23 @@
 ;;;; Mostly based on this guide, especially the "Virtual Pinhole Camera" chapter.
 ;;;;   https://www.scratchapixel.com/lessons/3d-basic-rendering/3d-viewing-pinhole-camera/how-pinhole-camera-works-part-1.html
 
+;; TODO (matrix math)
+;;  --> double-check the acos(dot(v1,v2)) math
+;;      I guess it works in sb-cga, so should work here?
+;;  --> copy impl. of rotate-around-transform from sb-cga
+
 (defclass camera ()
   ((pos
     :initarg :pos
-    :initform (vec3f 0 0 0)
+    :initform (vec3 0 0 0)
     :accessor pos)
    (dir
     :initarg :dir
-    :initform (vec3f 0 0 1)
+    :initform (vec3 0 0 1)
     :accessor dir)
    (focal-length
-       :initarg :focal-length
-       :accessor focal-length)
+    :initarg :focal-length
+    :accessor focal-length)
    (x-bound
     :initarg :x-bound
     :accessor x-bound)
@@ -27,26 +32,34 @@
    (transform-mat
     :accessor transform-mat)))
 
-(defmethod initialize-instance ((cam camera) &key &allow-other-keys)
+(defmethod initialize-instance :after ((cam camera) &key &allow-other-keys)
   (setf (transform-mat cam)
+        ;; Camera is at position P and points in direction D.
+        ;; First, transform the coordinate system so that the camera
+        ;; is at the origin (translation). Then rotate so that the camera
+        ;; is pointing along the positive z-axis.
+        ;; Matrix multiplication is how we compose these operations.
         (matrix*
-         ;; TODO: 1) translation transform, 2) rotation.
-         )))
+         (translation-transform (v-scale -1 (pos cam)))
+         (reorient-transform (dir cam) (vec3 0 0 1)))))
 
-(defsketch raster
+(defsketch renderer
     ((width 400)
      (height 400)
      (vertices
-      (list (vec3f -4 2 2)
-            (vec3f 0 5 2)
-            (vec3f 2 -5 2)))
+      (list (vec3 -1 -1 0)
+            (vec3 0 1 0)
+            (vec3 1 -1 0)))
      (cam (make-instance 'camera
                          :focal-length 1
                          :x-bound 10
-                         :y-bound 10))
+                         :y-bound 10
+                         :pos (vec3 0 0 -1)
+                         :dir (vec3 0 0 1)))
      (y-axis :up))
   ;; TODO:
-  ;; 0. Camera position and direction, transform points.
+  ;; 0. Swap out sb-cga for a library that accepts non-single-float
+  ;;    types in vectors.
   ;; 1. Frustum culling, z ordering of triangles, and also filter
   ;;    triangles facing the wrong way.
   ;; 2. Load model (bunch of triangles & their normals).
@@ -59,23 +72,32 @@
                    (y-bound y-bound))
       cam
     (flet ((project-pt (vert)
-             ;; First project onto canvas.
-             (let ((px (* (vx vert) f (/ (vz vert))))
-                   (py (* (vy vert) f (/ (vz vert)))))
+             ;; The goal is to map the vertex onto a 2d "canvas" in front
+             ;; of the camera. The canvas is like the retina of the eye, or
+             ;; the photoreceptors (?) in a camera. It shows the camera's 2d view
+             ;; of the 3d world.
+             ;; First, transform coordinate system so that the
+             ;; camera is at origin and facing in positive z direction.
+             (let* ((new-vert
+                      (apply-transform vert (transform-mat cam)))
+                    ;; Then project point onto canvas. 
+                    ;; For a given vertex (x,y,z) and focal length f (which is
+                    ;; the camera's distance from the canvas), the projected x
+                    ;; coordinate is given by:
+                    ;;    f/z = x'/x,
+                    ;;    x' = x(f/z).
+                    ;; Similarly, the projected y coordinate is:
+                    ;;    y' = y(f/z).
+                    (px (* (vx new-vert) f (/ (vz new-vert))))
+                    (py (* (vy new-vert) f (/ (vz new-vert)))))
                ;; Then blow up to size of screen.
                (values
                 (* width (/ (+ px x-bound) (* 2 x-bound)))
                 (* height (/ (+ py y-bound) (* 2 y-bound)))))))
       (destructuring-bind (v1 v2 v3) vertices
-        ;; Project all 3 vertices onto screen. Camera is assumed to be
-        ;; at origin and pointing in direction of positive z-axis, so
-        ;; there's no messing about with transformations into camera space.
-        ;; For a given vertex (x,y,z), focal length f, projected x coordinate is
-        ;; given by:
-        ;;    f/z = x'/x,
-        ;;    x' = x(f/z).
-        ;; The projected y coordinate is:
-        ;;    y' = y(f/z).
+        ;; Map all 3 vertices to the screen. When we draw a triangle
+        ;; consisting of those mapped vertices, it'll appear as it would
+        ;; to the camera.
         (multiple-value-bind (x1 y1) (project-pt v1)
           (multiple-value-bind (x2 y2) (project-pt v2)
             (multiple-value-bind (x3 y3) (project-pt v3)

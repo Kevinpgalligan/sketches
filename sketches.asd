@@ -20,6 +20,7 @@
                (:file "lsystem")
                (:file "widgets")
                (:file "physics")
+               (:file "transform")
                (:module "thesketches"
                 :serial t
                 :components

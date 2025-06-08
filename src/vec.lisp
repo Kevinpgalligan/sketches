@@ -12,13 +12,6 @@
 (defun vec3 (x y z)
   (make-array '(3) :initial-contents (list x y z)))
 
-(defun vec3f (x y z)
-  (make-array '(3)
-              :element-type 'single-float
-              :initial-contents (list (float x)
-                                      (float y)
-                                      (float z))))
-
 (defun vx (v) (aref v 0))
 (defun vy (v) (aref v 1))
 (defun vz (v) (aref v 2))
@@ -103,7 +96,7 @@
 (defun v-normalise! (v)
   (let ((len (v-length v)))
     (if (zerop len)
-        nil
+        v
         (v-scale! (/ 1 len) v))))
 
 (defun v-rescale (new-length v)
@@ -174,3 +167,16 @@ distance of SPACING between each one, the point (0,0) is on the grid."
 
 (defun polar-vec (theta r)
   (v->cartesian! (vec2 theta r)))
+
+(defun cross-product (a b)
+  "Cross product of two 3d vectors A and B."
+  (vec3 (- (* (vy a) (vz b))
+           (* (vz a) (vy b)))
+        (- (* (vx a) (vz b))
+           (* (vz a) (vx b)))
+        (- (* (vx a) (vy b))
+           (* (vy a) (vx b)))))
+
+(defun zero-vector? (v)
+  (loop for x across v
+        always (zerop x)))
