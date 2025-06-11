@@ -172,8 +172,8 @@ distance of SPACING between each one, the point (0,0) is on the grid."
   "Cross product of two 3d vectors A and B."
   (vec3 (- (* (vy a) (vz b))
            (* (vz a) (vy b)))
-        (- (* (vx a) (vz b))
-           (* (vz a) (vx b)))
+        (- (* (vz a) (vx b))
+           (* (vx a) (vz b)))
         (- (* (vx a) (vy b))
            (* (vy a) (vx b)))))
 

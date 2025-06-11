@@ -69,6 +69,7 @@
    :v->polar
    :polar-vec
    :euclidean-distance
+   :cross-product
 
    :matrix*
    :apply-transform

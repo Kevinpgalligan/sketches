@@ -3,7 +3,8 @@
 ;; Linear transformations used for 3d camera math.
 ;; This was originally a shim over the sb-cga library, but that
 ;; only works with arrays of single-floats, and I'm going
-;; for convenience over efficiency.
+;; for convenience over efficiency. Now it's partly copied from
+;; sb-cga.
 
 (defun matrix (x11 x12 x13 x14
                x21 x22 x23 x24
@@ -49,6 +50,7 @@
         ;; if w can realistically become 0? Maybe that's
         ;; what gimble lock is? But anyway, doing this just
         ;; to avoid a crash.
+        (warn "Uh oh, w is 0!")
         (setf w 1))
       (vec3 (/ (dim 0) w)
             (/ (dim 1) w)
@@ -61,10 +63,17 @@
           0 0 0 1))
 
 (defun scale-transform (vec)
-  (matrix (vx vec) 0 0 0
-          0 (vy vec) 0 0
-          0 0 (vz vec) 0
-          0 0 0 1))
+  (matrix (vx vec) 0        0        0
+          0        (vy vec) 0        0
+          0        0        (vz vec) 0
+          0        0        0        1))
+
+(defun identity-transform ()
+  (matrix
+   1 0 0 0
+   0 1 0 0
+   0 0 1 0
+   0 0 0 1))
 
 (defun reorient-transform (source-vec target-vec)
   ;; Take the cross product of the source & target, and use
@@ -72,15 +81,31 @@
   (let ((cp (cross-product source-vec target-vec)))
     (if (zero-vector? cp)
         ;; Cross product is zero, can't be used as axis.
-        ;; Vectors must be pointing in opposite directions, so
-        ;; this works instead.
-        (scale-transform (vec3 -1 -1 -1))
-        (let ((n-source (v-normalize source-vec))
+        ;; Vectors must be pointing in same (or opposite) direction, so
+        ;; either use identify transformation or flip.
+        (if (> (v-dot source-vec target-vec) 0)
+            (identity-transform)
+            (scale-transform (vec3 -1 -1 -1)))
+        (let ((n-source (v-normalise source-vec))
               (n-target (v-normalise target-vec)))
           (rotate-around-transform
            (v-normalise! (cross-product n-source n-target))
            (acos (v-dot n-source n-target)))))))
 
-(defun rotate-around-transform (v angle)
-  ;; TODO
-  )
+(defun rotate-around-transform (v radians)
+  "Rotates around vector V by RADIANS."
+  ;; See:
+  ;;  https://en.wikipedia.org/wiki/Rotation_matrix#In_three_dimensions
+  ;; ...section "Rotation matrix from axis and angle".
+  (let* ((u (v-normalise v))
+         (s (sin radians))
+         (c (cos radians))
+         (g (- 1 c)))
+    (let ((ux (vx u))
+          (uy (vy u))
+          (uz (vz u)))
+      (matrix
+       (+ (* (square ux) g) c)  (- (* ux uy g) (* uz s)) (+ (* ux uz g) (* uy s)) 0
+       (+ (* ux uy g) (* uz s)) (+ (* (square uy) g) c)  (- (* uy uz g) (* ux s)) 0
+       (- (* ux uz g) (* uy s)) (+ (* uy uz g) (* ux s)) (+ (* (square uz) g) c)  0
+       0                        0                        0                        1))))
