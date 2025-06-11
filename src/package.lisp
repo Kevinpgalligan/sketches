@@ -7,6 +7,7 @@
    :sketch-pkg-suffix
    :load-static-resource
    :get-last-sketch
+   :get-static-path
 
    :lerp
    :smoothstep

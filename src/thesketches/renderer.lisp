@@ -71,26 +71,31 @@ the face (and the normal vector)."
 (defsketch renderer
     ((width 400)
      (height 400)
-     (triangles
-      (list
-       (make-triangle (vec3 -1 -1 0)
-                      (vec3 0 1 0)
-                      (vec3 1 -1 0))))
+     (triangles (load-teapot))
+     (pos (vec3 0 3 -3))
      (cam (make-instance 'camera
                          :focal-length 1
-                         :x-bound 10
-                         :y-bound 10
-                         :pos (vec3 0 0 -1)
-                         :dir (vec3 0 0 1)))
-     (y-axis :up)
-     (theta 0))
-  (let* ((tri (first triangles))
-         (center (v-scale (/ 3) (v+ (v1 tri) (v2 tri) (v3 tri))))
-         (pos (v+ center (vec3 (cos theta) 0 (sin theta)))))
-    (setf (pos cam) pos
-          (dir cam) (v- center pos)))
-  (draw-triangles cam triangles width height)
-  (incf theta 0.01))
+                         :x-bound 2
+                         :y-bound 2
+                         :pos pos 
+                         :dir (v-normalise! (v-scale -1 pos))))
+     (y-axis :up))
+  (time
+   (draw-triangles cam triangles width height))
+  (stop-loop))
+
+(defun load-teapot ()
+  ;; From: https://users.cs.utah.edu/~dejohnso/models/teapot.html
+  ;; It's only 3488 triangles.
+  (with-open-file (stream (get-static-path "utah_teapot.tris"))
+    (flet ((read-vertex ()
+             (vec3 (float (read stream))
+                   (float (read stream))
+                   (float (read stream)))))
+      (let ((num-triangles (parse-integer (read-line stream))))
+        (loop repeat num-triangles
+              collect (make-triangle (read-vertex) (read-vertex) (read-vertex))
+              do (read-line stream nil))))))
 
 (defun draw-triangles (cam triangles width height)
   ;; The goal is to project each triangle onto a 2d "canvas" in front
