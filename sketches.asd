@@ -53,4 +53,5 @@
                  (:file "barricelli")
                  (:file "physics-test")
                  (:file "keffiyeh")
+                 (:file "renderer")
                  ))))

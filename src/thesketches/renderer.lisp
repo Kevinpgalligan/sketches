@@ -6,8 +6,6 @@
 ;;;; Mostly based on this guide, especially the "Virtual Pinhole Camera" chapter.
 ;;;;   https://www.scratchapixel.com/lessons/3d-basic-rendering/3d-viewing-pinhole-camera/how-pinhole-camera-works-part-1.html
 
-;;;; TODO: Load a 3d model in .obj format
-
 (defclass camera ()
   ((pos
     :initarg :pos
