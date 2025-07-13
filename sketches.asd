@@ -54,4 +54,5 @@
                  (:file "physics-test")
                  (:file "keffiyeh")
                  (:file "renderer")
+                 (:file "zeno")
                  ))))
