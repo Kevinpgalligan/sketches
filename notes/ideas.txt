@@ -6,12 +6,11 @@
 * Fix weird double-draw bug when drawing to canvas.
 
 ## Sketches
-- Math formula to produce pattern: https://www.reddit.com/r/math/comments/1liwj82/floork2_mod_2_was_not_supposed_to_go_this_hard/
 - Truchet tiles: https://en.m.wikipedia.org/wiki/Truchet_tiles
 - Shipibo art.
 - Hakka-inspired collage-style rendering of a picture; edge detction on image to make shape, voronoi to divide shape into triangles (?), group triangles randomly, fill in each group with a random cropped part of an image.
 - Map of underground
-- Lava lamp / marching squares: https://www.youtube.com/shorts/RAAs6hURSrs?app=desktop
+- Lava lamp / marching squares: https://www.youtube.com/shorts/RAAs6hURSrs
 - Halt & Catch Fire-esque image leaking
 - ;; Useful utils...
   (do-along-path (:parametric z
@@ -55,3 +54,4 @@
    https://tylerxhobbs.com/essays
    https://www.bit-101.com/blog/
 * Draw pics with pen plotter: https://www.csun.io/2021/12/29/plotting-old-pictures.html
+- Math formula to produce pattern: https://www.reddit.com/r/math/comments/1liwj82/floork2_mod_2_was_not_supposed_to_go_this_hard/

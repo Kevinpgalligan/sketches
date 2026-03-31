@@ -53,5 +53,5 @@
                    do (push (shifted-point x y rng max-shift) tinydot-coords)))))
 
 (defun shifted-point (x y rng max-shift)
-  (list (+ x (random-state:random-float rng 0 max-shift))
-        (+ y (random-state:random-float rng 0 max-shift))))
+  (list (+ x (random-state:random-float rng 0.0 max-shift))
+        (+ y (random-state:random-float rng 0.0 max-shift))))
