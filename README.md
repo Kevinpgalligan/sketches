@@ -46,3 +46,4 @@ In case this list is incomplete, you can run `(print-all-sketches)` to show all 
 * `physics-test`: Testing my implementation of Verlet physics. Particles, gravity, bounds, springs, sticks.
 * `keffiyeh`: Randomly generated patterns in the style of the Palestinian keffiyeh.
 * `renderer`: Rendering a 3000ish-triangle model of the Utah teapot. Includes camera model, z-sorting, etc. Completely unoptimised, render takes about 45ms.
+* `automata`: Experiments with finite state automata.

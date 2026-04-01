@@ -34,6 +34,7 @@
             "#F0E442" "#0072B2" "#D55E00" "#CC79A7"))
     (:tol ("#332288" "#117733" "#44AA99" "#88CCEE"
            "#DDCC77" "#CC6677" "#AA4499" "#882255"))
+    (:black-and-white ("#000000" "#FFFFFF"))
     ))
 
 (loop for raw-palette in *raw-palettes*

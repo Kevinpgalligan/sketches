@@ -25,7 +25,7 @@
   (setf shrink-ratio (+ 0.5 (random 0.2)))
   (stop-loop))
 
-(defmethod on-key ((instance trees) (key (eql :space)) (state (eql :keyup)))
+(defmethod on-key ((instance trees) (key (eql :space)) (state (eql :up)))
   (start-loop))
 
 (defun draw-branch (h min-size theta shrink-ratio)
@@ -66,7 +66,7 @@
   (setf shrink-ratio (+ 0.5 (random 0.2)))
   (stop-loop))
 
-(defmethod on-key ((instance trees) (key (eql :space)) (state (eql :keyup)))
+(defmethod on-key ((instance trees) (key (eql :space)) (state (eql :up)))
   (start-loop))
 
 (defclass branch ()
@@ -135,5 +135,5 @@
   (setf theta (+ 10 (random 30)))
   (stop-loop))
 
-(defmethod on-key ((instance trees) (key (eql :space)) (state (eql :keyup)))
+(defmethod on-key ((instance trees) (key (eql :space)) (state (eql :up)))
   (start-loop))

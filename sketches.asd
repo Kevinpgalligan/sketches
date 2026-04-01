@@ -55,4 +55,5 @@
                  (:file "keffiyeh")
                  (:file "renderer")
                  (:file "zeno")
+                 (:file "automata")
                  ))))

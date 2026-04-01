@@ -41,7 +41,7 @@
 
 (defmethod on-key ((instance lorenz) key state)
   (with-slots (reset-p x y z sigma rho beta) instance
-    (when (and (eq key :space) (eq state :keydown))
+    (when (and (eq key :space) (eq state :down))
       (setf reset-p t
             x (random 5.0)
             y (random 5.0)
