@@ -6,6 +6,9 @@
 * Fix weird double-draw bug when drawing to canvas.
 
 ## Sketches
+- CHECK BOOKMARKS.
+- Celtic braid patterns
+- Arabic tilings.
 - Truchet tiles: https://en.m.wikipedia.org/wiki/Truchet_tiles
 - Shipibo art.
 - Hakka-inspired collage-style rendering of a picture; edge detction on image to make shape, voronoi to divide shape into triangles (?), group triangles randomly, fill in each group with a random cropped part of an image.
