@@ -144,7 +144,7 @@ COLOUR-FUN maps a cell state (integer) to a colour. By default, comes up with a 
             (setf (gethash s colour-map) c)
             c)))))
 
-(defun state->black-or-white (state)
+(defun black-or-white-colour (state)
   (case state
     (0 +white+)
     (1 +black+)
@@ -241,16 +241,109 @@ NEIGHBOURHOOD determines whether all 8 neighbouring cells are passed to the tran
         1
         0)))
 
-(defsketch automata
-    ((width 200)
-     (height 200)
+(defun make-random-transition-func (num-possible-states)
+  (let ((map (make-hash-table)))
+    (lambda (state neighbours)
+      (let ((key state))
+        (loop for n in neighbours
+              do (setf key (+ n (* key num-possible-states))))
+        (or (gethash key map)
+            (let ((output (random num-possible-states)))
+              (setf (gethash key map) output)
+              output))))))
+
+(defsketch automata-fixed-tiles
+    ((width 400)
+     (height 400)
+     (tile-size 80)
+     (cell-size 2))
+  (let ((cells (floor tile-size cell-size)))
+    (draw-fixed-tiles
+     (lambda (x y w h)
+       (declare (ignorable h))
+       (render-1d-automaton
+        (make-1d-automaton-from-wolfram-number (random 256) :random-init t :size cells)
+        cells
+        :width w
+        :row-height cell-size
+        :colour-fn (make-colour-func-from-palette :ibm :shuffle-palette t)
+        :x x
+        :y y))
+     width
+     height
+     (floor width tile-size)
+     (floor height tile-size)))
+  (stop-loop))
+
+(defsketch automata-random-tiles
+    ((width 400)
+     (height 400)
+     (tile-size 80)
+     (cell-size 2))
+  (background +black+)
+  (draw-random-tiles
+   (lambda (x y w h)
+     (declare (ignorable h))
+     (let ((cells (floor w cell-size)))
+       (render-1d-automaton
+        (make-1d-automaton-from-wolfram-number (random 256) :random-init t :size cells)
+        (floor h cell-size)
+        :width w
+        :row-height cell-size
+        :colour-fn (make-colour-func-from-palette (palette-name (random-palette)) :shuffle-palette t)
+        :x x
+        :y y)))
+   width
+   height)
+  (stop-loop))
+
+(defsketch automata-game-of-life
+    ((width 400)
+     (height 400)
      (auto (make-2d-automaton #'game-of-life-transition
-                              :width width
-                              :height height
+                              :width 200
+                              :height 200
                               :random-init t
                               :num-possible-states 2)))
-  (draw-2d-automaton auto :colour-fn #'state->black-or-white)
+  (draw-2d-automaton auto :colour-fn #'black-or-white-colour :draw-width width :draw-height height)
   (transition-2d-automaton auto))
 
-(defmethod on-key ((instance automata) (key (eql :space)) (state (eql :up)))
-  (start-loop))
+
+;; This just looks like random noise...
+(defsketch automata-random-2d
+    ((width 400)
+     (height 400)
+     (possible-states 2)
+     (auto (make-2d-automaton (make-random-transition-func possible-states)
+                              :width 200
+                              :height 200
+                              :random-init t
+                              :num-possible-states possible-states))
+     (colour-func (make-colour-func-from-palette :ch-skeleton :shuffle-palette t)))
+  (draw-2d-automaton auto
+                     :colour-fn colour-func
+                     :draw-width width
+                     :draw-height height)
+  (transition-2d-automaton auto))
+
+
+(defsketch automata-2d-life-variant
+    ((width 800)
+     (height 800)
+     (possible-states 2)
+     (auto (make-2d-automaton (lambda (state neighbours)
+                                (let ((count (reduce #'+ neighbours)))
+                                  (if (or (and (= state 0) (= count 2))
+                                          (and (= state 1) (< 1 count 5)))
+                                      1
+                                      0)))
+                              :width 200
+                              :height 200
+                              :random-init t
+                              :num-possible-states possible-states))
+     (colour-func (make-colour-func-from-palette :ch-skeleton :shuffle-palette t)))
+  (draw-2d-automaton auto
+                     :colour-fn colour-func
+                     :draw-width width
+                     :draw-height height)
+  (transition-2d-automaton auto))

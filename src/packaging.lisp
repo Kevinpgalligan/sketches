@@ -24,8 +24,7 @@ specific to a particular sketch."
 
 (defun load-sketch (name &rest rest)
   "Runs the sketch associated with the package called NAME.
-Extra arguments to the MAKE-INSTANCE call may also be passed.
-Currently, there is no support for defining multiple sketches per package."
+Extra arguments to the MAKE-INSTANCE call may also be passed."
   (let* ((pkg (find-package (get-sketch-package-name name)))
          (sketch-class
            (loop for sc in (closer-mop:class-direct-subclasses (find-class 'sketch))
@@ -34,6 +33,19 @@ Currently, there is no support for defining multiple sketches per package."
     (if sketch-class
         (apply #'make-instance sketch-class rest)
         (error "No sketch exists within the named package."))))
+
+(defun load-subsketch (pkg-name sketch-name)
+  (let* ((pkg (find-package (get-sketch-package-name pkg-name)))
+         (sketch-class
+           (loop with k = 0
+                 for sc in (closer-mop:class-direct-subclasses (find-class 'sketch))
+                 when (and (equalp pkg (symbol-package (class-name sc)))
+                           (string= (symbol-name (class-name sc))
+                                    (symbol-name sketch-name)))
+                   return sc)))
+    (if sketch-class
+        (make-instance sketch-class)
+        (error (format nil "Couldn't find sketch called ~a in the given package." sketch-name)))))
 
 (defun sketch-pkg-suffix ()
   "Returns suffix of the package of the currently-running sketch, or NIL

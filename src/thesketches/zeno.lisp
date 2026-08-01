@@ -44,3 +44,45 @@
                      curr-size)))))
   
   (stop-loop))
+
+;; Could expand this one with other shape types, but I'm not sure if the juice
+;; would be worth the squeeze.
+(defsketch zeno-random
+    ((width 400)
+     (height 400)
+     (pal (random-palette))
+     (reset-on :space)
+     (min-lines 12)
+     (max-lines 20)
+     (steps 12)
+     (starting-radius 50)
+     (f 0.8)
+     (field (make-flowfield :strength 0.8)))
+  (shuffle-palette pal)
+  (background (next-colour pal))
+
+  (loop repeat 2
+        do (with-pen (make-pen :fill (next-colour pal))
+             (let ((pt (vec2 (random (float width)) (random (float height))))
+                   (bounds (vec2 width height)))
+               (loop repeat steps
+                     for r = starting-radius then (* f r)
+                     do (progn
+                          (let ((x (vx pt))
+                                (y (vy pt)))
+                            (circle x y r)
+                            (when (< x r)
+                              (circle (+ width x) y r))
+                            (when (< (- width x) r)
+                              (circle (- x width) y r))
+                            (when (< y r)
+                              (circle x (+ height y) r))
+                            (when (< (- height y) r)
+                              (circle x (- y height) r)))
+                          (v%!
+                           (v+! pt
+                                (v-rescale! (+ r (* f r))
+                                            (flowfield-get-effect field pt)))
+                           bounds))))))
+
+  (stop-loop))

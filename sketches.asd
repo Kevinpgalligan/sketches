@@ -21,6 +21,7 @@
                (:file "widgets")
                (:file "physics")
                (:file "transform")
+               (:file "tiling")
                (:module "thesketches"
                 :serial t
                 :components
@@ -56,4 +57,5 @@
                  (:file "renderer")
                  (:file "zeno")
                  (:file "automata")
+                 (:file "parabolas")
                  ))))

@@ -51,6 +51,8 @@
    :v-!
    :v*!
    :v/!
+   :v%
+   :v%!
    :v-scale
    :v-scale!
    :v-length
@@ -84,6 +86,7 @@
    :next-colour
    :reset-palette
    :shuffle-palette
+   :palette-pop-colour
    :palette-num-colours
    :random-palette
    :list-palettes
@@ -106,4 +109,7 @@
    :add-stick-constraint
    :add-spring-constraint
    :apply-force
+
+   :draw-fixed-tiles
+   :draw-random-tiles
    ))

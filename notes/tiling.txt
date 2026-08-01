@@ -1,0 +1,37 @@
+## Tiling theory
+Regular tilings:
+1. Every tile is a regular polygon.
+  (Triangles, squares, hexagons)
+2. Every tile is the same.
+3. (Secret requirement) Sides line up exactly & all are the same size.
+
+Semi-regular tilings (8 of them):
+ Change requirement 2 so that every CORNER is the same.
+ Can be constructed by applying symmetry-preserving operations to the regular tilings.
+ E.g. TRUNCATION -- take a tiling and add shapes at the corners.
+ New shapes need to be the right size so that the original shapes remain regular (i.e. all side lengths equal).
+ Another e.g., RECTIFICATION, make new shapes big enough that original edges go away.
+
+Laves tiling:
+  Dual tiling by putting dots at centre of each shape, join adjacent shapes.
+  Not very interesting for regular tilings (hexagon <-> triangle, square <-> square).
+  Laves tilings are the duals of the semiregular tiles.
+  Can be constructed by adding a new vertex to the centre of each shape and joining to the original vertices.
+
+More tilings from combining the new shapes/tiles ("planigons") that result from Laves tilings.
+
+
+Girih tiles are another option.
+
+## Software
+Imperative Python API for constructing tilings with regular polygons:
+  https://github.com/fogleman/Tiling
+
+A port of taprats from Java to C++:
+  https://github.com/ChortleMortal/TiledPatternMaker
+
+Taprats itself (Craig Kaplan):
+  https://taprats.sourceforge.net/
+
+Apparently a new version (in C++), written for Windows:
+  https://github.com/pierrebai/Alhambra/

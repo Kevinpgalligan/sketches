@@ -81,6 +81,15 @@ the colours have been exhausted."
   (alexandria:shuffle (slot-value palette 'colours))
   palette)
 
+(defun palette-pop-colour (palette)
+  "Removes the last colour from the palette list (and returns it)."
+  (when (= (slot-value palette 'colour-index)
+           (1- (num-colours palette)))
+    ;; Need to do this to avoid index being out of bounds.
+    (decf (slot-value palette 'colour-index)))
+  (decf (num-colours palette))
+  (pop (palette-colours palette)))
+
 (defun palette-num-colours (palette)
   "Returns number of colours in a palette."
   (slot-value palette 'num-colours))

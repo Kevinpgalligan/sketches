@@ -58,7 +58,8 @@
              do (loop for ,other-v in ,vs
                       do (setf (vn ,v1 ,i)
                                (,operator (vn ,v1 ,i)
-                                          (vn ,other-v ,i))))))))
+                                          (vn ,other-v ,i)))))
+       ,v1)))
 
 (defmacro def-vops (name name! operator)
   `(progn
@@ -69,6 +70,7 @@
 (def-vops v- v-! -)
 (def-vops v* v*! *)
 (def-vops v/ v/! /)
+(def-vops v% v%! mod)
 
 (defun v-scale (a v)
   (apply #'vec (loop for x across v collect (* a x))))
