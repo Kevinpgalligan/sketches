@@ -256,7 +256,7 @@ NEIGHBOURHOOD determines whether all 8 neighbouring cells are passed to the tran
     ((width 400)
      (height 400)
      (tile-size 80)
-     (cell-size 2))
+     (cell-size 8))
   (let ((cells (floor tile-size cell-size)))
     (draw-fixed-tiles
      (lambda (x y w h)
@@ -279,7 +279,7 @@ NEIGHBOURHOOD determines whether all 8 neighbouring cells are passed to the tran
     ((width 400)
      (height 400)
      (tile-size 80)
-     (cell-size 2))
+     (cell-size 4))
   (background +black+)
   (draw-random-tiles
    (lambda (x y w h)

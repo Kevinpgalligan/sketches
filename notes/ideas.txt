@@ -1,4 +1,5 @@
 ## Sketch itself
+* (copy-pixels t) seems to prevent `background` from working. Or: drawing in input funcs.
 * Make position refer to top-left corner when y-axis points up?
   Con: someone draws at position (0,0), they might be surprised when
        nothing shows up. So, see how other graphics libs handle this.
