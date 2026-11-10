@@ -1,13 +1,9 @@
-## Sketch itself
-* (copy-pixels t) seems to prevent `background` from working. Or: drawing in input funcs.
-* Make position refer to top-left corner when y-axis points up?
-  Con: someone draws at position (0,0), they might be surprised when
-       nothing shows up. So, see how other graphics libs handle this.
-  Is a workaround for the error thing to change the text alignment when y-axis points up?
-* Fix weird double-draw bug when drawing to canvas.
+## Utilities
+- GUI stuff
 
 ## Sketches
 - CHECK BOOKMARKS.
+- SP tiling.
 - Celtic braid patterns
 - Arabic tilings.
 - Truchet tiles: https://en.m.wikipedia.org/wiki/Truchet_tiles

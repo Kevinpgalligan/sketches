@@ -17,8 +17,9 @@
      (yellowy-r 5)
      (canvas (make-canvas width height))
      (spinner-center
-      (vec2 (* .8 (- (random width) max-dist))
-            (* .8 (- (random height) max-dist))))
+      (vec2
+       (* .8 (- (random width) max-dist))
+       (* .8 (- (random height) max-dist))))
      (spinner-offset 10)
      (spinner-radius 30)
      (spinner-angle 0)

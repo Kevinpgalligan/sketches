@@ -20,7 +20,6 @@ Laves tiling:
 
 More tilings from combining the new shapes/tiles ("planigons") that result from Laves tilings.
 
-
 Girih tiles are another option.
 
 ## Software
@@ -35,3 +34,29 @@ Taprats itself (Craig Kaplan):
 
 Apparently a new version (in C++), written for Windows:
   https://github.com/pierrebai/Alhambra/
+
+## Implementation notes
+Based on the taprats project...
+A Tiling is made up of 2 translation vectors and a set of "PlacedFeatures".
+A Feature is a tile, i.e. a list of points.
+A PlacedFeature is a Feature with a transform matrix; this allows multiple versions of the
+same Feature into a Tiling, by varying the transformation.
+A Transform is a 2-dimensional affine transform.  Kaplan stores it as the top 2 rows of a
+homogenous 3x3 matrix. Can also be looked at as a 2x2 linear transform together with translation vector.
+
+Then there are a bunch of hardcoded tilings. I'm not sure how these were generated, tbh! Or how the scale is
+determined.
+
+Things to do:
+- Figure out how tilings are generated.
+- Implement the above model.
+- Implement some basic tilings (regular polygons, São Paulo, whatever).
+- Implement drawing code.
+
+Then maybe...
+- Figure out how to generate Islamic tilings!
+  Something to do with firing rays from each edge (how to detect edges? see comments below) and
+  detecting the intersections. These intersection points then form the new tiles,
+  I think.
+- How to detect edges: I don't think it's done using explicit coordinates, but what Kaplan calls
+  a planar map abstraction, "one of the big daddy structures of computational geometry".
