@@ -58,4 +58,5 @@
                  (:file "zeno")
                  (:file "automata")
                  (:file "parabolas")
+                 (:file "marching")
                  ))))
