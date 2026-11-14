@@ -2,7 +2,7 @@
 
 (defun load-static-resource (filename)
   "Loads a static resource from src/static/<name-of-sketch-package>/<filename>."
-  (load-resource filename :with-sketch-package-suffix t))
+  (load-resource (get-static-path filename :with-sketch-package-suffix t)))
 
 (defun get-static-path (filename &key with-sketch-package-suffix)
   (let ((base-dir (slot-value (asdf:find-system 'sketches)
