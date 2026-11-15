@@ -19,7 +19,7 @@
      (threshold 0.5)
      (pen (make-pen :fill +black+ :stroke nil)))
   (background +white+)
-  (noise-seed 26)
+  (noise-seed (get-universal-time))
   ;; Iterate over all cells.
   (dotimes (i cellwidth)
     (dotimes (j cellwidth)
