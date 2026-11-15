@@ -4,13 +4,8 @@
 ;; based on this video by The Coding Train:
 ;;   https://www.youtube.com/watch?v=0ZONMNUKTfU
 ;;
-;; Also helpful was this article referenced by that video:
+;; Also helpful was this article, referenced in that video:
 ;;   https://jamie-wong.com/2014/08/19/metaballs-and-marching-squares/
-;;
-;; TODO...
-;;  0. Save some intermediate results (for reference).
-;;  1. Refactor the defsketch so that fits on 1 screen.
-;;  2. Linear interpolation!
 
 (sketches:def-sketch-package marching)
 (in-package kg.sketch.marching)
@@ -24,7 +19,7 @@
      (threshold 0.5)
      (pen (make-pen :fill +black+ :stroke nil)))
   (background +white+)
-  (noise-seed (get-universal-time))
+  (noise-seed 26)
   ;; Iterate over all cells.
   (dotimes (i cellwidth)
     (dotimes (j cellwidth)
@@ -35,8 +30,12 @@
                (if (>= v threshold)
                    1
                    0))
-             (v-avg (v1 v2)
-               (v-scale! .5 (v+ v1 v2)))
+             (interp (p1 v1 p2 v2)
+               ;; p1 is "inside", i.e. v1 is above the threshold. While v2 is below.
+               ;; Interpolate between them based on the threshold value.
+               (let ((d (/ (- threshold v2)
+                           (- v1 v2))))
+                 (v+! (v-scale! d (v- p1 p2)) p2)))
              (fc (&rest pts) ; Fill Cell
                (with-pen pen
                  (apply #'polygon
@@ -53,33 +52,29 @@
           (let ((av (pt-noise a))
                 (bv (pt-noise b))
                 (cv (pt-noise c))
-                (dv (pt-noise d))
-                (a-b (v-avg a b))
-                (a-c (v-avg a c))
-                (b-d (v-avg b d))
-                (c-d (v-avg c d)))
+                (dv (pt-noise d)))
             ;; Now, apply the binary threshold to corner values and handle all 16 possible
             ;; cases. 'a', 'b', 'c', and 'd' correspond to the top-left, top-right, bottom-left
-            ;; and bottom-right corners. After thresholding, the outcomes can be indexed as
-            ;; a 4-bit number and handled individually.
+            ;; and bottom-right corners. After thresholding, the combined values of the corners can
+            ;; be represented as a 4-bit number and handled individually. 
             (case (+ (to-bin av) (* #b10 (to-bin bv)) (* #b100 (to-bin cv)) (* #b1000 (to-bin dv)))
               ;; Skipping the zero case, it's a completely empty cell.
               (1
-               ;; 'a' is "inside" the boundary, so fill in that corner of the cell.
+               ;; 'a' is "inside" the boundary (above the threshold), so fill in that corner of the cell.
                ;; For now, we don't do linear interpolation between corner values...
-               (fc a a-b a-c))
-              (2 (fc a-b b b-d))
-              (3 (fc a b b-d a-c))
-              (4 (fc c a-c c-d))
-              (5 (fc a a-b c-d c))
-              (6 (fc b b-d c-d c a-c a-b))
-              (7 (fc a b b-d c-d c))
-              (8 (fc d c-d b-d))
-              (9 (fc a a-b b-d d c-d a-c))
-              (10 (fc a-b b d c-d))
-              (11 (fc a b d c-d a-c))
-              (12 (fc c a-c b-d d))
-              (13 (fc a a-b b-d d c))
-              (14 (fc a-b b d c a-c))
+               (fc a (interp a av b bv) (interp a av c cv)))
+              (2 (fc (interp b bv a av) b (interp b bv d dv)))
+              (3 (fc a b (interp b bv d dv) (interp a av c cv)))
+              (4 (fc c (interp c cv a av) (interp c cv d dv)))
+              (5 (fc a (interp a av b bv) (interp c cv d dv) c))
+              (6 (fc b (interp b bv d dv) (interp c cv d dv) c (interp c cv a av) (interp b bv a av)))
+              (7 (fc a b (interp b bv d dv) (interp c cv d dv) c))
+              (8 (fc d (interp d dv c cv) (interp d dv b bv)))
+              (9 (fc a (interp a av b bv) (interp d dv b bv) d (interp d dv c cv) (interp a av c cv)))
+              (10 (fc (interp b bv a av) b d (interp d dv c cv)))
+              (11 (fc a b d (interp d dv c cv) (interp a av c cv)))
+              (12 (fc c (interp c cv a av) (interp d dv b bv) d))
+              (13 (fc a (interp a av b bv) (interp d dv b bv) d c))
+              (14 (fc (interp b bv a av) b d c (interp c cv a av)))
               (15 (fc a b d c))))))))
   (stop-loop))
